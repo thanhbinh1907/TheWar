@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TowerDefense.Core
 {
@@ -8,16 +8,25 @@ namespace TowerDefense.Core
 	[CreateAssetMenu(fileName = "NewUnitData", menuName = "TowerDefense/Unit Data")]
 	public class UnitData : ScriptableObject
 	{
-		public string unitName;
-		public UnitClass unitClass;
-		public FactionVoundDat faction;
+		[SerializeField] private string _unitName;
+		[SerializeField] private UnitClass _unitClass;
+		[SerializeField] private FactionVoundDat _faction;
 
 		[Header("Combat Stats")]
-		public float damage = 10f;
-		public float attackRange = 5f;
-		public float attackSpeed = 1f; 
+		[SerializeField] private float _damage = 10f;
+		[SerializeField] private float _attackRange = 5f;
+		[SerializeField] private float _attackSpeed = 1f; 
 
 		[Header("Visual")]
-		public Color unitColor = Color.white; 
+		[SerializeField] private Color _unitColor = Color.white;
+
+		// Public properties for encapsulation
+		public string UnitName => _unitName;
+		public UnitClass UnitClass => _unitClass;
+		public FactionVoundDat Faction => _faction;
+		public float Damage => _damage;
+		public float AttackRange => _attackRange;
+		public float AttackSpeed => _attackSpeed;
+		public Color UnitColor => _unitColor;
 	}
 }

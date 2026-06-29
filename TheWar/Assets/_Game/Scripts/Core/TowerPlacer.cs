@@ -10,7 +10,7 @@ namespace TowerDefense.Core
 		private void Update()
 		{
 			if (!Input.GetMouseButtonDown(0)) return;
-			if (PlacementManager.Instance == null || PlacementManager.Instance.selectedUnit == null) return;
+			if (PlacementManager.Instance == null || PlacementManager.Instance.SelectedUnit == null) return;
 
 			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 			if (!Physics.Raycast(ray, out RaycastHit hit)) return;
@@ -23,7 +23,9 @@ namespace TowerDefense.Core
 			// Kiểm tra ô hợp lệ (Phải nằm trong lưới, đi bộ được, và chưa có tháp)
 			if (node == null || !node.Walkable || node.HasTower)
 			{
+#if UNITY_EDITOR
 				Debug.Log($"Vị trí [{x},{y}] không hợp lệ để đặt tháp!");
+#endif
 				return;
 			}
 
@@ -34,7 +36,7 @@ namespace TowerDefense.Core
 			GameObject tower = Instantiate(_towerSocketPrefab, spawnPos, Quaternion.identity);
 
 			// Cắm unit vào tower ngay lập tức
-			tower.GetComponent<TowerSocket>().PlugUnit(PlacementManager.Instance.selectedUnit);
+			tower.GetComponent<TowerSocket>().PlugUnit(PlacementManager.Instance.SelectedUnit);
 
 			// Đánh dấu ô đã có tháp — khóa không cho đặt đè
 			node.HasTower = true;

@@ -22,6 +22,13 @@ namespace TowerDefense.Enemy
 			ResetHealth();
 		}
 
+		private void OnDisable()
+		{
+			// Clear all event subscriptions to prevent event accumulation memory leaks in ObjectPool
+			OnDamageTaken = null;
+			OnDied = null;
+		}
+
 		public void Initialize(EnemyDataSO data)
 		{
 			_enemyData = data;
