@@ -6,8 +6,10 @@ namespace TowerDefense.Core
 	{
 		public static PlacementManager Instance { get; private set; }
 
+		[SerializeField] private UnitData _selectedUnit;
+
 		// Encapsulated property
-		public UnitData SelectedUnit { get; private set; }
+		public UnitData SelectedUnit => _selectedUnit;
 
 		private void Awake()
 		{
@@ -26,7 +28,7 @@ namespace TowerDefense.Core
 		// Hàm này giả lập việc bạn bấm vào một Thẻ bài nhân vật (PvZ Style)
 		public void SelectUnitCard(UnitData unitData)
 		{
-			SelectedUnit = unitData;
+			_selectedUnit = unitData;
 #if UNITY_EDITOR
 			Debug.Log($"[Placement] Đang giữ thẻ: {unitData.UnitName} ({unitData.UnitClass}) | Sẵn sàng đặt tháp.");
 #endif
@@ -35,7 +37,7 @@ namespace TowerDefense.Core
 		// Xóa trạng thái đang cầm thẻ sau khi đã đặt tháp xong
 		public void ClearSelection()
 		{
-			SelectedUnit = null;
+			_selectedUnit = null;
 		}
 	}
 }
