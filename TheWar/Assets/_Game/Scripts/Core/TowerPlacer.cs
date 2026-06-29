@@ -15,6 +15,9 @@ namespace TowerDefense.Core
 			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 			if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
+			// Nếu click trúng vào một bệ tháp đã có sẵn, để TowerSocket tự xử lý, không spawn tháp mới
+			if (hit.collider.GetComponent<TowerSocket>() != null) return;
+
 			// Lấy tọa độ grid từ vị trí click chuột
 			if (!GridManager.Instance.GetXY(hit.point, out int x, out int y)) return;
 

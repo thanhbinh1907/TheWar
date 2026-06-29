@@ -10,6 +10,24 @@ namespace TowerDefense.Core
 
 		private void Awake() => _meshRenderer = GetComponent<MeshRenderer>();
 
+		private void Start()
+		{
+			RegisterToGrid();
+		}
+
+		private void RegisterToGrid()
+		{
+			if (GridManager.Instance != null && GridManager.Instance.GetXY(transform.position, out int x, out int y))
+			{
+				GridNode node = GridManager.Instance.GetNode(x, y);
+				if (node != null)
+				{
+					node.HasTower = true;
+					GridManager.Instance.SetWalkable(x, y, false);
+				}
+			}
+		}
+
 		// Hàm này tự kích hoạt khi người chơi click CHUỘT THẲNG VÀO KHỐI CUBE THÁP này
 		private void OnMouseDown()
 		{
