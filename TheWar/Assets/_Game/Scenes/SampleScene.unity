@@ -11059,6 +11059,8 @@ MonoBehaviour:
   _levelData: {fileID: 11400000, guid: 0d713fa7ac0ea384ab87ea038371eb46, type: 2}
   _spawnPoint: {fileID: 906241476}
   _timeBetweenWaves: 2
+  _pathContainer: {fileID: 0}
+  _pathId: path_01
   _waypointTransforms:
   - {fileID: 289682166}
 --- !u!114 &353276782
@@ -11080,6 +11082,8 @@ MonoBehaviour:
     - {x: 27.85, y: 0.4, z: -5.77}
     - {x: 27.85, y: 0.4, z: 1.11}
     - {x: 3.65, y: 0.4, z: 1.11}
+  _cornerRadius: 2
+  _segmentsPerCorner: 5
 --- !u!1 &356245818
 GameObject:
   m_ObjectHideFlags: 0
@@ -27573,75 +27577,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1728700507}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &914296383
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 914296384}
-  - component: {fileID: 914296385}
-  - component: {fileID: 914296386}
-  m_Layer: 0
-  m_Name: GridManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &914296384
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914296383}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &914296385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914296383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3ff50606e1eb8e488e7dac47b6a4812, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.GridManager
-  _width: 31
-  _height: 17
-  _cellSize: 1
-  _originPosition: {x: 1.74, y: 0.45, z: -10.85}
-  _obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  _roadLayer:
-    serializedVersion: 2
-    m_Bits: 128
---- !u!114 &914296386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 914296383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4373b0b979344644baa3e80ae30f587f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.AI.FlowFieldManager
-  _showGizmos: 1
-  _arrowColor: {r: 0.8301887, g: 0.024638645, b: 0, a: 1}
 --- !u!1 &923045276
 GameObject:
   m_ObjectHideFlags: 0
@@ -59575,51 +59510,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2025731694}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2026735636
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2026735638}
-  - component: {fileID: 2026735637}
-  m_Layer: 0
-  m_Name: PathfindingQueueManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2026735637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026735636}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70b77da8342f4fe439d7935ca1bdde84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.PathfindingQueueManager
-  _maxRequestsPerFrame: 5
---- !u!4 &2026735638
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2026735636}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 26.28931, y: 0.5, z: -5.04279}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2030111973
 GameObject:
   m_ObjectHideFlags: 0
@@ -62710,9 +62600,7 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 28242859}
   - {fileID: 1512894919}
-  - {fileID: 914296384}
   - {fileID: 449443364}
   - {fileID: 353276780}
   - {fileID: 750845874}
   - {fileID: 1728700507}
-  - {fileID: 2026735638}

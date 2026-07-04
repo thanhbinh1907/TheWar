@@ -125,7 +125,16 @@ namespace TowerDefense.Wave
 			
 			if (_pathContainer != null)
 			{
-				movement.AssignPath(_pathContainer.GetPath(_pathId));
+				PathData path = _pathContainer.GetPath(_pathId);
+				if (path == null)
+				{
+					Debug.LogError($"[WaveManager] Không tìm thấy PathData nào có pathId là '{_pathId}' trong PathContainer! Vui lòng kiểm tra lại Inspector của PathContainer.");
+				}
+				movement.AssignPath(path);
+			}
+			else
+			{
+				Debug.LogError("[WaveManager] _pathContainer chưa được kéo vào Inspector của WaveManager!");
 			}
 
 			movement.OnReachedBaseEvent += () => ReleaseEnemy(pool, obj);

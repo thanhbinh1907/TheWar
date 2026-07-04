@@ -5,6 +5,23 @@ public class PathContainer : MonoBehaviour
 {
     [SerializeField] private List<PathData> _paths = new List<PathData>();
 
+    [Header("Smoothing")]
+    [SerializeField] private float _cornerRadius = 2f;
+    [SerializeField] private int _segmentsPerCorner = 5;
+
+    [Header("Road Constraints")]
+    [SerializeField] private float _roadWidth = 5f;
+
+    public float RoadWidth => _roadWidth;
+
+    private Dictionary<string, PathData> _smoothedCache = new Dictionary<string, PathData>();
+
+    private void OnValidate()
+    {
+        // Xóa cache khi chỉnh sửa trên Inspector để cập nhật lại Gizmos/Runtime
+        _smoothedCache?.Clear();
+    }
+
     public Vector3 GetWaypoint(string pathId, int index)
     {
         foreach (var path in _paths)
@@ -23,11 +40,23 @@ public class PathContainer : MonoBehaviour
 
     public PathData GetPath(string pathId)
     {
+        if (_smoothedCache.TryGetValue(pathId, out PathData cachedPath))
+        {
+            return cachedPath;
+        }
+
         foreach (var path in _paths)
         {
             if (path.pathId == pathId)
             {
-                return path;
+                // Bake smoothed path
+                PathData smoothedPath = new PathData
+                {
+                    pathId = path.pathId,
+                    waypointPositions = PathCornerSmoother.RoundCorners(path.waypointPositions, _cornerRadius, _segmentsPerCorner)
+                };
+                _smoothedCache[pathId] = smoothedPath;
+                return smoothedPath;
             }
         }
         return null;
@@ -50,10 +79,14 @@ public class PathContainer : MonoBehaviour
     {
         if (_paths == null) return;
 
-        foreach (var path in _paths)
+        foreach (var rawPath in _paths)
         {
-            if (path.waypointPositions == null || path.waypointPositions.Count == 0)
+            if (rawPath.waypointPositions == null || rawPath.waypointPositions.Count == 0)
                 continue;
+
+            // Lấy path đã được làm mượt để vẽ Gizmo
+            PathData path = GetPath(rawPath.pathId);
+            if (path == null) continue;
 
             Gizmos.color = Color.yellow;
 

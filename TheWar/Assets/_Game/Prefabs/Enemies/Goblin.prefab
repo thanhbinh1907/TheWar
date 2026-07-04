@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: -148726700701046001}
   - component: {fileID: 3144724994991333824}
   - component: {fileID: -631805975405434741}
-  - component: {fileID: 2322794764267338196}
   m_Layer: 9
   m_Name: Goblin
   m_TagString: Untagged
@@ -170,7 +169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca6b6f8300ddf44dbfcb9d1e77a3a82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Enemy.EnemyMovement
-  _useWaypoint: 1
   _steering: {fileID: -631805975405434741}
 --- !u!114 &3144724994991333824
 MonoBehaviour:
@@ -197,16 +195,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947a9c3e317e2824c8788035e5e269a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySteering
---- !u!114 &2322794764267338196
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6910893475199368868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b83bfd8c4dbf654f89fd9c5a44b2b61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WaypointTester
-  _pathIdToTest: path_01

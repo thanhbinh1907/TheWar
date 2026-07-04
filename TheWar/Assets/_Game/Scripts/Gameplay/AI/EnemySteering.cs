@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class EnemySteering : MonoBehaviour
 {
+    [Header("Separation (Dàn ngang mặt đường)")]
+    [SerializeField] private float _separationRadius = 2.5f;
+    [SerializeField] private float _separationWeight = 3f;
+
     private Vector3 _separationForce;
         
     public Vector3 CurrentVelocity { get; private set; }
@@ -34,8 +38,8 @@ public class EnemySteering : MonoBehaviour
     {
         _separationForce = Vector3.zero;
         int enemyLayer = LayerMask.GetMask("Enemy");
-        // Bán kính overlap sphere nhỏ
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1.5f, enemyLayer);
+        // Dùng _separationRadius để quái nhận diện nhau từ xa và dàn rộng ra bề mặt đường
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _separationRadius, enemyLayer);
             
         int count = 0;
         foreach (var col in colliders)
@@ -52,7 +56,7 @@ public class EnemySteering : MonoBehaviour
         if (count > 0)
         {
             _separationForce /= count;
-            _separationForce = _separationForce.normalized * 2.5f; // Trọng số đẩy
+            _separationForce = _separationForce.normalized * _separationWeight; // Trọng số đẩy dàn hàng
         }
     }
 }

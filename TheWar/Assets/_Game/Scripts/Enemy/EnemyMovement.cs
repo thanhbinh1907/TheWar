@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using TowerDefense.Shared;
 using TowerDefense.Core;
-using TowerDefense.Gameplay.AI;
 
 namespace TowerDefense.Enemy
 {
@@ -52,8 +51,21 @@ namespace TowerDefense.Enemy
 
 		private void MoveAlongWaypoint()
 		{
-			if (_assignedPath == null || _assignedPath.waypointPositions == null || _assignedPath.waypointPositions.Count == 0 || _steering == null)
+			if (_assignedPath == null)
+			{
+				Debug.LogError($"[EnemyMovement] _assignedPath is NULL! Cannot move.");
 				return;
+			}
+			if (_assignedPath.waypointPositions == null || _assignedPath.waypointPositions.Count == 0)
+			{
+				Debug.LogError($"[EnemyMovement] waypointPositions is empty! Cannot move.");
+				return;
+			}
+			if (_steering == null)
+			{
+				Debug.LogError($"[EnemyMovement] _steering is NULL! Cannot move.");
+				return;
+			}
 
 			if (_currentWaypointIndex >= _assignedPath.waypointPositions.Count)
 			{
