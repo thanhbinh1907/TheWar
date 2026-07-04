@@ -1,57 +1,90 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 using TowerDefense.Shared;
+using TowerDefense.Core;
+using TowerDefense.Gameplay.AI;
 
 namespace TowerDefense.Enemy
 {
 	public class EnemyMovement : MonoBehaviour, IPoolable
 	{
 		private EnemyDataSO _data;
-		private List<Vector3> _waypoints;
-		private int _currentWaypointIndex;
+		private Vector3 _targetPosition;
 		private bool _isMoving;
 
-		public void Initialize(EnemyDataSO data, List<Vector3> waypoints)
+		[SerializeField] private EnemySteering _steering;
+		private int _currentWaypointIndex;
+		private PathData _assignedPath;
+
+
+
+		// Event triggered when the enemy successfully reaches the final waypoint (base)
+		public event Action OnReachedBaseEvent;
+
+		public void Initialize(EnemyDataSO data, Vector3 targetPosition)
 		{
 			_data = data;
-			_waypoints = waypoints;
-			_currentWaypointIndex = 0;
+			_targetPosition = targetPosition;
 			_isMoving = true;
+
+
+		}
+
+		private void OnDisable()
+		{
+			// Clear event subscriptions to prevent memory leaks in ObjectPool
+			OnReachedBaseEvent = null;
 		}
 
 		private void Update()
 		{
-			if (!_isMoving || _waypoints == null || _waypoints.Count == 0) return;
-			MoveToNextWaypoint();
+			if (!_isMoving) return;
+
+			MoveAlongWaypoint();
 		}
 
-		private void MoveToNextWaypoint()
+		public void AssignPath(PathData path)
 		{
-			if (_currentWaypointIndex >= _waypoints.Count)
+			_assignedPath = path;
+			_currentWaypointIndex = 0;
+		}
+
+		private void MoveAlongWaypoint()
+		{
+			if (_assignedPath == null || _assignedPath.waypointPositions == null || _assignedPath.waypointPositions.Count == 0 || _steering == null)
+				return;
+
+			if (_currentWaypointIndex >= _assignedPath.waypointPositions.Count)
 			{
 				OnReachedBase();
 				return;
 			}
 
-			Vector3 target = _waypoints[_currentWaypointIndex];
-			transform.position = Vector3.MoveTowards(
-				transform.position, target, _data.MoveSpeed * Time.deltaTime);
+			Vector3 targetWaypoint = _assignedPath.waypointPositions[_currentWaypointIndex];
+			Vector3 currentPos = transform.position;
 
-			// Rotate về phía đang đi
-			Vector3 dir = (target - transform.position);
-			if (dir.sqrMagnitude > 0.001f)
-				transform.rotation = Quaternion.LookRotation(dir);
+			Vector3 velocity = _steering.CalculateSeekForce(currentPos, targetWaypoint, _data.MoveSpeed);
+			transform.position += velocity * Time.deltaTime;
 
-			if (Vector3.Distance(transform.position, target) < 0.05f)
+			if (velocity.sqrMagnitude > 0.001f)
+			{
+				transform.rotation = Quaternion.LookRotation(velocity.normalized);
+			}
+
+			if (Vector3.Distance(currentPos, targetWaypoint) < 0.3f)
+			{
 				_currentWaypointIndex++;
+			}
 		}
+
+
 
 		private void OnReachedBase()
 		{
 			_isMoving = false;
-			//GameManager.Instance?.OnEnemyReachedBase();
-			gameObject.SetActive(false);
-			OnReturnToPool();
+			// Invoke event so WaveManager (or GameManager) can release this object back to pool
+			OnReachedBaseEvent?.Invoke();
 		}
 
 		// IPoolable
@@ -59,6 +92,8 @@ namespace TowerDefense.Enemy
 		{
 			_isMoving = false;
 			_currentWaypointIndex = 0;
+
+
 		}
 
 		public void OnReturnToPool()
@@ -66,5 +101,7 @@ namespace TowerDefense.Enemy
 			_isMoving = false;
 			gameObject.SetActive(false);
 		}
+
+
 	}
 }

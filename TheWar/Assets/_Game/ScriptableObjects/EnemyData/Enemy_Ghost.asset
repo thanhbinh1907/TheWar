@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4587f020137e189478e5b94f29b88dc0, type: 3}
-  m_Name: Enemy_Goblin
+  m_Name: Enemy_Ghost
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Enemy.EnemyDataSO
   _maxHealth: 50
-  _moveSpeed: 10
+  _moveSpeed: 3
   _goldReward: 10
-  _enemyPrefab: {fileID: 6910893475199368868, guid: a46475aa1d27ba24e94ef394e092892e, type: 3}
-  _canLeaveRoad: 0
+  _enemyPrefab: {fileID: 6910893475199368868, guid: dc49a56d32e9cc9419f62d213a894761, type: 3}
+  _canLeaveRoad: 1

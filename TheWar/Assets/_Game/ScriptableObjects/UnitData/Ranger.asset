@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
   m_Name: Ranger
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
-  unitName: 
-  unitClass: 0
-  faction: 0
-  damage: 10
-  attackRange: 5
-  attackSpeed: 1
-  unitColor: {r: 0, g: 0.09750787, b: 0.6415094, a: 1}
+  _unitName: 
+  _unitClass: 0
+  _faction: 0
+  _damage: 10
+  _attackRange: 5
+  _attackSpeed: 1
+  _unitColor: {r: 0, g: 0.1963225, b: 0.6320754, a: 1}

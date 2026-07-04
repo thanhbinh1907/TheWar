@@ -1,30 +1,49 @@
+using System.Collections.Generic;
 using UnityEngine;
+using TowerDefense.Tower;
 
 namespace TowerDefense.Core
 {
 	public class TowerSocket : MonoBehaviour
 	{
+		// Static list tracking all currently occupied/active towers
+		public static List<TowerSocket> ActiveTowers { get; } = new List<TowerSocket>();
+
 		public bool IsOccupied { get; private set; }
 		public UnitData CurrentUnitData { get; private set; }
 		private MeshRenderer _meshRenderer;
+		private TowerHealth _health;
 
-		private void Awake() => _meshRenderer = GetComponent<MeshRenderer>();
+		private void Awake()
+		{
+			_meshRenderer = GetComponent<MeshRenderer>();
+			_health = GetComponent<TowerHealth>();
+		}
 
 		private void Start()
 		{
-			RegisterToGrid();
+			// Bệ tháp trống thì không nhận sát thương
+			if (_health != null)
+			{
+				_health.enabled = false;
+			}
 		}
 
-		private void RegisterToGrid()
+		private void OnDisable()
 		{
-			if (GridManager.Instance != null && GridManager.Instance.GetXY(transform.position, out int x, out int y))
+			ActiveTowers.Remove(this);
+			if (_health != null)
 			{
-				GridNode node = GridManager.Instance.GetNode(x, y);
-				if (node != null)
-				{
-					node.HasTower = true;
-					GridManager.Instance.SetWalkable(x, y, false);
-				}
+				_health.OnTowerDied -= HandleTowerDied;
+			}
+		}
+
+		private void OnDestroy()
+		{
+			ActiveTowers.Remove(this);
+			if (_health != null)
+			{
+				_health.OnTowerDied -= HandleTowerDied;
 			}
 		}
 
@@ -58,6 +77,19 @@ namespace TowerDefense.Core
 			CurrentUnitData = data;
 			IsOccupied = true;
 
+			if (!ActiveTowers.Contains(this))
+			{
+				ActiveTowers.Add(this);
+			}
+
+			// Kích hoạt máu của tháp khi đã cắm Lõi nhân vật
+			if (_health != null)
+			{
+				_health.enabled = true;
+				_health.Initialize();
+				_health.OnTowerDied += HandleTowerDied;
+			}
+
 			// Đổi màu tháp bằng MaterialPropertyBlock để giữ hiệu năng GPU Instancing
 			if (_meshRenderer != null)
 			{
@@ -72,6 +104,31 @@ namespace TowerDefense.Core
 
 			// Cắm xong thì xóa thẻ đang cầm trên tay đi
 			PlacementManager.Instance.ClearSelection();
+		}
+
+		public void UnplugUnit()
+		{
+			IsOccupied = false;
+			CurrentUnitData = null;
+			ActiveTowers.Remove(this);
+
+			if (_health != null)
+			{
+				_health.OnTowerDied -= HandleTowerDied;
+				_health.enabled = false;
+			}
+
+			if (_meshRenderer != null)
+			{
+				var block = new MaterialPropertyBlock();
+				block.SetColor("_BaseColor", Color.white);
+				_meshRenderer.SetPropertyBlock(block);
+			}
+		}
+
+		private void HandleTowerDied()
+		{
+			UnplugUnit();
 		}
 	}
 }

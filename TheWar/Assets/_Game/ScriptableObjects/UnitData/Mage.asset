@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
   m_Name: Mage
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
-  unitName: 
-  unitClass: 0
-  faction: 0
-  damage: 10
-  attackRange: 5
-  attackSpeed: 1
-  unitColor: {r: 0.3523115, g: 0.01561943, b: 0.3679245, a: 1}
+  _unitName: 
+  _unitClass: 0
+  _faction: 0
+  _damage: 10
+  _attackRange: 5
+  _attackSpeed: 1
+  _unitColor: {r: 0.49387893, g: 0.13950694, b: 0.5188679, a: 1}
