@@ -1,282 +1,286 @@
-
-# Tower Defense — Full Project Context for Antigravity AI
-
-## Stack
-
-- Unity 6 (6000.x LTS), Universal Render Pipeline (URP)
-- C# 10, Composition-over-Inheritance (KHÔNG dùng class kế thừa sâu)
-- Asset: Synty Polygon Fantasy Kingdom Pack (low poly, GPU Instancing enabled)
-- Target: PC + WebGL (itch.io)
+# Tower Defense 3D — Map Editor Architecture (Waypoint Edition) — Full Project Context for Antigravity AI
+> Cập nhật: 05/07/2026 | Unity 6 LTS | C# | URP | Synty Polygon Assets
+> Bản sửa đổi: Waypoint + Steering, Corner Smoothing, Wall Force đọc trực tiếp từ road mesh (không hardcode độ rộng).
 
 ---
 
-## Game Design Document
+## I. MỤC TIÊU
 
-### Bối cảnh
-
-Thế giới gồm 5 Vùng Đất (5 bộ Synty asset). Thế lực hắc ám đánh cắp Nguyên Tố cốt lõi của từng vùng khiến mỗi vùng **mất hoàn toàn 1 Class quân đội**. Người chơi (giữ Ấn Cổ) đi qua các vùng đất, dùng thẻ bài của vùng này để "vá" lỗ hổng chiến thuật cho vùng khác.
-
-### Ma trận 5 Vùng Đất × Khuyết Tật
-
-| Vùng Đất                | Asset Synty | Mất Nguyên Tố | Class bị khóa                 |
-| -------------------------- | ----------- | ---------------- | ------------------------------- |
-| Vương Quốc Thần Thoại | Kingdom     | 🔥 Hỏa          | ❌ Pháo Binh (AoE)             |
-| Thung Lũng Hoang Dã      | Adventure   | 💨 Phong         | ❌ Cung Thủ (tầm xa)          |
-| Vùng Biển Thất Lạc     | Pirate      | 🌊 Thủy         | ❌ Pháp Sư (phép)            |
-| Thánh Địa Samurai       | Samurai     | ⛰️ Thổ        | ❌ Đấu Sĩ (block/chặn)      |
-| Hầm Ngục U Tối          | Dungeons    | ⚡ Lôi          | ❌ Sát Thủ (blink/cơ động) |
-
-### Core Gameplay Loop (PvZ × TFT)
-
-1. Trước trận: Người chơi chọn thẻ Quân Cờ từ bộ sưu tập (PvZ style)
-2. Trong trận: Click thẻ → Click vào **Khung Tháp cố định** trên map → Tháp hấp thụ lõi, đổi hành vi theo Class
-3. Kích hoạt Tộc/Hệ (TFT style) khi đủ số lượng cùng Faction/Class
-
-### Cơ chế Socket Tower (QUAN TRỌNG)
-
-- **KHÔNG spawn tháp tự do khi click đất trống**
-- Map được đặt sẵn Khung Tháp cố định theo level design
-- GridManager chỉ dùng để: quản lý trạng thái ô + tính A* cho enemy
-- Flow đúng: Chọn thẻ (PlacementManager) → Click Khung Tháp (TowerSocket) → Tháp đổi màu/stat
+- Game TD 3D có **Map Editor** cho người chơi tự vẽ đường đi (Waypoint) và đặt map.
+- Map **chia sẻ được** dưới dạng JSON nhẹ (mảng tọa độ Waypoint + Socket).
+- Chịu tải **hàng trăm đến hàng nghìn enemy** cùng lúc.
+- Kiến trúc dễ mở rộng, không phải refactor lớn khi thêm tính năng.
+- **Không giả định trước kích thước map/đường đi** — mọi hệ thống (di chuyển, validation) phải tự thích ứng theo road mesh thật của từng map người chơi tạo, vì mỗi map rộng hẹp khác nhau và có thể có đoạn rộng đoạn hẹp trong cùng 1 map.
 
 ---
 
-## Cấu Trúc Thư Mục
+## II. TRIẾT LÝ THIẾT KẾ
+
+> **Game không xoay quanh AI tìm đường phức tạp. Game xoay quanh dữ liệu Tuyến đường (Waypoint Path) do người chơi vẽ trong Map Editor.**
+
+```
+Người chơi vẽ đường (đặt các Waypoint)
+        ↓
+Engine liên kết thành Path Network + bo góc cua
+        ↓
+Enemy đi tuần tự qua các Node bằng Steering (Seek + Separation + Wall Force)
+```
+
+Người chơi **không bao giờ** phải:
+- Tự cấu hình Grid/Cost Field
+- Tính pathfinding thủ công
+- Khai báo độ rộng đường bằng số — độ rộng đọc thẳng từ mesh vẽ
+
+Tóm gọn 1 câu: **Game chỉ lưu Map Data + mảng tọa độ Waypoint. Khi Load, Runtime dựng lại path, bo góc, sinh Collider mép đường từ chính road mesh. Enemy không tính pathfinding mỗi frame — chỉ Seek tới waypoint tiếp theo, tự né nhau và tự né mép đường bằng lực vật lý.**
+
+---
+
+## III. KIẾN TRÚC TỔNG THỂ
+
+```
+Map Editor (Đặt Terrain/Road mesh, vẽ chuỗi Waypoint, đặt Socket)
+    │
+    ▼
+Map Data JSON (chỉ lưu và chia sẻ chuỗi text này)
+    │
+    ▼
+Load & Reconstruction Pipeline
+    │
+    ├── Path Linker (nối Waypoint thành tuyến liên tục)
+    ├── Path Corner Smoother (bo tròn góc cua bằng Quadratic Bezier)
+    ├── Road Edge Baker (quét mép road mesh → sinh Collider layer RoadEdge)
+    ├── Socket Spawner (sinh điểm đặt trụ tại vị trí đã lưu)
+    └── Validation Pipeline
+    │
+    ▼
+Gameplay Runtime
+```
+
+**Save**: chỉ lưu Map Data ở dạng dữ liệu nguyên thủy (`Vector3`, ID Enemy/Tower). Road mesh là 1 phần Map Data (hình dạng do người chơi vẽ), không lưu số liệu độ rộng tách rời.
+**Không lưu**: bất kỳ dữ liệu runtime tính toán được (path đã bo góc, Collider mép đường — luôn bake lại khi Load, không cache).
+**Load**: đọc JSON → sinh Point object ẩn trong scene → bo góc path → bake Collider mép đường → gán vào WaveManager → sẵn sàng chơi.
+
+---
+
+## IV. AI SYSTEM — WAYPOINT + STEERING
+
+### Không dùng
+- ❌ A*/Dijkstra tính theo từng enemy.
+- ❌ NavMesh.
+- ❌ Flow Field/Cost Field/Distance Field (bake toàn field) — dư thừa cho map dạng lane, tháp luôn đặt ngoài đường đi.
+- ❌ Hằng số độ rộng đường cố định (`roadWidth`/`corridorWidth` dạng số tĩnh) — độ rộng phải đọc từ road mesh thật, không giả định trước.
+- ❌ Lane cố định theo cột/formation (đã thử, rollback vì không giữ được song song qua khúc cua) — thay bằng để Separation + Wall Force tự nhiên dàn quái trong bề rộng đường thật.
+- ❌ Set `transform.position` trực tiếp trong `Update()`, trừ class Steering.
+
+### Cơ chế di chuyển của Enemy — Steering 3 lực
+
+```
+Target Waypoint tiếp theo (đã bo góc)
+        ↓
+Seek Force (kéo về waypoint) + Separation Force (né quái khác)
+        + Wall Force (né mép đường, đọc từ Collider RoadEdge bake sẵn)
+        ↓
+Velocity cuối cùng
+        ↓
+Xoay mượt bằng Slerp (_rotationSpeed) + Di chuyển
+```
+
+- **Seek**: hướng tới `waypointPositions[index]`, chuyển waypoint sớm theo `_arriveRadius` (look-ahead) để bo cua mượt, không đợi chạm sát điểm.
+- **Separation**: `Physics.OverlapSphere` bán kính nhỏ, layer Enemy, throttle qua `InvokeRepeating` mỗi 0.1s.
+- **Wall Force**: bắn 2 tia ngắn vuông góc velocity sang 2 bên, layer `RoadEdge`; nếu trúng, đẩy ngược vào tâm đường, cường độ tỉ lệ nghịch khoảng cách. Đường hẹp → đẩy sớm; đường rộng → không đẩy, enemy tự do dàn theo Separation. **Không cần biết trước độ rộng bao nhiêu.**
+
+### Path Corner Smoother — bo góc cua
+
+Waypoint người chơi vẽ theo lưới road thường tạo góc vuông 90°, làm enemy đi "vuông". Xử lý **1 lần lúc Bake/Load map** (không phải mỗi frame), chỉ bo tại các góc, giữ nguyên đoạn thẳng:
+
+```csharp
+// Pure static class — Gameplay/AI/PathCornerSmoother.cs
+public static List<Vector3> RoundCorners(List<Vector3> rawWaypoints, float cornerRadius, int segmentsPerCorner)
+```
+Dùng Quadratic Bezier tại mỗi waypoint trung gian, control point = chính góc cua gốc. `cornerRadius` giới hạn không vượt nửa đoạn liền kề (tránh 2 góc gần nhau đè lên nhau).
+
+### Cấu trúc dữ liệu tuyến đường
+
+```csharp
+[System.Serializable]
+public class PathData
+{
+    public string pathId;
+    public List<Vector3> waypointPositions; // đã qua PathCornerSmoother lúc bake
+}
+```
+
+### Enemy đọc Waypoint mỗi frame
+
+```
+Mỗi frame:
+1. Enemy biết đang nhắm Waypoint[index] nào (int _currentWaypointIndex)
+2. Seek Force hướng tới waypoint đó
+3. Cộng Separation Force + Wall Force (throttle 0.1s)
+4. Slerp xoay theo velocity, move theo velocity tổng hợp
+5. Nếu khoảng cách < _arriveRadius → _currentWaypointIndex++
+```
+
+Enemy chỉ giữ 1 số index, không giữ path riêng — path là dữ liệu dùng chung (reference).
+
+---
+
+## V. MAP EDITOR & VALIDATION
+
+Người chơi ở chế độ Editor chỉ tương tác với:
+- **Spawn Point**: Waypoint đầu tiên.
+- **Goal Point**: Waypoint cuối cùng (nhà chính).
+- **Waypoints**: điểm mốc trung gian nối Spawn → Goal (được bo góc tự động khi bake).
+- **Tower Socket**: vị trí đặt trụ cố định, nằm ngoài đường đi.
+- **Obstacle**: vật cản trang trí/tầm nhìn.
+
+### Validation trước khi Publish/Share
+- **Path Connectivity**: `waypointPositions` không rỗng, điểm đầu trùng Spawn, điểm cuối dẫn tới Goal.
+- **Overlap Check (Socket/Obstacle vs Road)**: dùng `Physics.CheckSphere` tại vị trí Socket/Obstacle với layer `Road` — nếu chạm road thật → fail. **Không dùng khoảng cách so với hằng số** — kiểm tra trực tiếp trên hình dạng mesh thật, đúng với mọi map rộng/hẹp khác nhau.
+- **Wave Check**: mọi Wave có ít nhất 1 enemy, không có giá trị âm.
+
+**Không hợp lệ → khóa Export/Publish.**
+
+Vì Socket luôn bị validate nằm ngoài road thật → enemy **không cần** và **không thể** tấn công tháp, không cần tính va chạm vật lý Tower-Enemy ở runtime.
+
+---
+
+## VI. COMPONENT RULES
+
+### Mỗi Component chỉ 1 nhiệm vụ
+```
+Enemy/
+├── EnemyMovement   (quản lý _currentWaypointIndex, nhận Steering output để di chuyển)
+├── EnemySteering   (Seek + Separation + Wall Force, Slerp xoay)
+├── EnemyHealth
+├── EnemyCombat     (trừ máu người chơi khi tới Goal)
+└── EnemyAnimation  (đồng bộ tốc độ Steering vào Animator)
+```
+❌ Không có `EnemyController` ôm hết logic.
+
+### Event System — decouple bằng Event Bus
+```
+❌ Tower → gọi trực tiếp Enemy.TakeDamage()
+✅ Tower → Damage Event → Event Bus → Enemy subscribe
+```
+
+### Data — ScriptableObject cho mọi thứ
+Enemy, Tower, Projectile, Buff, Debuff, Wave, Map Rule — tất cả là ScriptableObject, không hard-code số liệu.
+
+### Naming Convention
+| Type | Convention | Ví dụ |
+|------|-----------|-------|
+| Private field | `_camelCase` | `_currentWaypointIndex` |
+| SerializeField | `private` | `[SerializeField] private EnemyDataSO _data` |
+| Interface | `I` prefix | `IDamageable` |
+| ScriptableObject | `SO` suffix | `EnemyDataSO` |
+| Event | `On` prefix | `OnEnemyDied` |
+
+### File Limits
+- 1 class = 1 file, tên file = tên class
+- Method tối đa 50 dòng, Class tối đa 200 dòng
+- `Debug.Log` chỉ trong `#if UNITY_EDITOR`
+- Không Singleton bừa bãi — chỉ chấp nhận cho hệ thống Core tĩnh (`EventBus`, `ObjectPool`) nếu thực sự cần
+- Không dùng `Resources.Load()` — tài nguyên tham chiếu qua ScriptableObject
+- Không Manager gọi Manager, không God Object
+
+---
+
+## VII. CẤU TRÚC THƯ MỤC
 
 ```
 Assets/
 ├── _Game/
 │   ├── Scripts/
-│   │   ├── Core/          ← GridManager, GridNode, PlacementManager, TowerSocket, UnitData
-│   │   ├── Enemy/         ← EnemyHealth, EnemyMovement, EnemyDataSO
-│   │   ├── Tower/         ← TowerDetector, TowerShooter, TowerUpgrade
-│   │   ├── Wave/          ← WaveManager
-│   │   ├── UI/            ← CardUI, HandUI
-│   │   └── Shared/        ← IDamageable, IPoolable
+│   │   ├── Core/          ← Event Bus, Object Pool, base interfaces
+│   │   ├── Gameplay/
+│   │   │   ├── AI/        ← PathData, PathContainer, PathValidator, PathCornerSmoother
+│   │   │   ├── Combat/    ← IDamageable, DamageEvent, ProjectilePool
+│   │   │   ├── Enemy/     ← EnemyMovement, EnemySteering, EnemyHealth, EnemyDataSO
+│   │   │   ├── Tower/     ← TowerSocket, TowerDetector, TowerShooter, TowerDataSO
+│   │   │   ├── Wave/      ← WaveManager, WaveDataSO, EnemySpawnEntry
+│   │   │   └── Map/       ← MapData, SpawnPoint, GoalPoint, SocketData, RoadEdgeBaker
+│   │   ├── Editor/        ← Map Editor tools, Waypoint draw UI, Validation Tool
+│   │   ├── UI/            ← CardUI, EditorHUD, GameplayHUD
+│   │   ├── Save/          ← MapSerializer (Map Data ↔ JSON)
+│   │   └── Debug/
 │   ├── Prefabs/
-│   │   ├── Enemies/
-│   │   ├── Towers/
-│   │   └── Projectiles/
 │   └── ScriptableObjects/
-│       ├── UnitData/
-│       └── EnemyData/
 └── Plugins/
-    └── PolygonFantasy/    ← Synty asset, KHÔNG sửa file trong này
+    └── PolygonFantasy/    ← KHÔNG sửa file trong này
 ```
 
 ---
 
-## Code Hiện Có (Đã Chạy Thành Công)
+## VIII. ROADMAP
 
-### GridNode.cs
-
-```csharp
-namespace TowerDefense.Core {
-    public class GridNode {
-        public int X { get; }
-        public int Y { get; }
-        public bool Walkable { get; set; }
-        public bool HasTower { get; set; }
-        // A* data
-        public float GCost { get; set; }
-        public float HCost { get; set; }
-        public float FCost => GCost + HCost;
-        public GridNode Parent { get; set; }
-
-        public GridNode(int x, int y, bool walkable) {
-            X = x; Y = y; Walkable = walkable;
-        }
-    }
-}
-```
-
-### GridManager.cs (Singleton)
-
-- Width, Height, CellSize (=2), OriginPosition configurable từ Inspector
-- `GetNode(int x, int y)` — trả về GridNode hoặc null nếu out of bounds
-- `GetWorldPosition(int x, int y)` — tâm ô theo world space
-- `GetXY(Vector3 worldPos, out int x, out int y)` — world → grid index
-- `SetWalkable(int x, int y, bool walkable)`
-- `OnDrawGizmos`: ô trắng = walkable, đỏ = blocked
-- Road ở cột 4-6 đã bị SetWalkable(false) trong Start()
-
-### UnitData.cs (ScriptableObject)
-
-```csharp
-using UnityEngine;
-namespace TowerDefense.Core {
-    public enum UnitClass { Bruiser, Ranger, Mage, Assassin, Artillery }
-    public enum FactionVoundDat { Kingdom, Adventure, Pirate, Samurai, Dungeons }
-
-    [CreateAssetMenu(fileName = "NewUnitData", menuName = "TowerDefense/Unit Data")]
-    public class UnitData : ScriptableObject {
-        public string unitName;
-        public UnitClass unitClass;
-        public FactionVoundDat faction;
-        public float damage = 10f;
-        public float attackRange = 5f;
-        public float attackSpeed = 1f;
-        public Color unitColor = Color.white;
-    }
-}
-```
-
-### PlacementManager.cs (Singleton)
-
-- Ghi nhớ `selectedUnit` (UnitData) người chơi đang chọn
-- `SelectUnitCard(UnitData data)` — chọn thẻ
-- `ClearSelection()` — bỏ chọn sau khi cắm xong
-
-### TowerSocket.cs (Gắn vào Khung Tháp prefab)
-
-```csharp
-using UnityEngine;
-namespace TowerDefense.Core {
-    public class TowerSocket : MonoBehaviour {
-        public bool IsOccupied { get; private set; }
-        public UnitData CurrentUnitData { get; private set; }
-        private MeshRenderer _meshRenderer;
-
-        private void Awake() => _meshRenderer = GetComponent<MeshRenderer>();
-
-        private void OnMouseDown() {
-            if (PlacementManager.Instance?.selectedUnit == null) return;
-            if (IsOccupied) return;
-            PlugUnit(PlacementManager.Instance.selectedUnit);
-        }
-
-        public void PlugUnit(UnitData data) {
-            CurrentUnitData = data;
-            IsOccupied = true;
-            // MaterialPropertyBlock — KHÔNG tạo material instance, giữ GPU Instancing
-            var block = new MaterialPropertyBlock();
-            block.SetColor("_BaseColor", data.unitColor);
-            _meshRenderer.SetPropertyBlock(block);
-            PlacementManager.Instance.ClearSelection();
-        }
-    }
-}
-```
+1. Bootstrap & Core Framework (Event Bus, Object Pool)
+2. Waypoint Data Structure (`PathData`, `PathContainer`, `PathValidator`)
+3. Enemy Steering (Seek + Separation qua Waypoint)
+4. Path Corner Smoother (bo góc cua)
+5. Road Edge Baker + Wall Force (né mép đường không hardcode độ rộng)
+6. Combat Layer (`IDamageable`, Projectile Pool, Tower dò mục tiêu)
+7. Tower Socket System (load Socket từ Map Data, cắm thẻ runtime)
+8. Wave Manager (đọc config Wave từ Map Data, spawn qua Object Pool)
+9. Map Editor UI (click chấm điểm tạo Waypoint, đặt Socket)
+10. Map Serializer & Validation (JSON, lọc lỗi logic trước khi Publish)
+11. Save/Load
+12. Optimization
 
 ---
 
-## Quy Tắc Kiến Trúc (BẮT BUỘC TUÂN THEO)
+## IX. NHỮNG GÌ ĐÃ THỬ VÀ BỎ
 
-### Composition, không kế thừa
+- ❌ Flow Field / Cost Field / Distance Field / Grid-based A* / NavMesh — bỏ khi chuyển sang Waypoint.
+- ❌ **Grid Formation Spawn + Fixed Lane Offset theo cột** — thử để enemy đi thành nhiều làn song song, nhưng lane cố định không giữ được song song qua khúc cua (hướng vuông góc đổi theo từng đoạn, cột formation lúc spawn không khớp lane lúc di chuyển). Đã rollback.
+- ❌ **Corridor Width dạng hằng số cố định** — thử random lane trong 1 bề rộng cố định, nhưng nhận ra mỗi map người chơi vẽ rộng/hẹp khác nhau, không thể hardcode 1 con số đúng cho mọi map. Thay bằng Wall Force đọc trực tiếp từ Collider mép đường (mục IV).
 
-```csharp
-// ❌ KHÔNG BAO GIỜ làm thế này
-class FlyingBossEnemy : BossEnemy : Enemy { }
-
-// ✅ LUÔN làm thế này — thêm component
-[RequireComponent(typeof(EnemyHealth))]
-[RequireComponent(typeof(EnemyMovement))]
-public class Enemy : MonoBehaviour { }
-public class FlyAbility : MonoBehaviour { }   // gắn thêm nếu cần
-public class ShieldAbility : MonoBehaviour { } // gắn thêm nếu cần
-```
-
-- Max 1 cấp kế thừa MonoBehaviour
-- Hành vi mới = component mới, KHÔNG phải subclass mới
-
-### Performance — Bắt buộc
-
-```csharp
-// 1. Cache GetComponent trong Awake, KHÔNG gọi trong Update
-private EnemyHealth _health;
-void Awake() => _health = GetComponent<EnemyHealth>();
-
-// 2. Object Pool cho enemy, đạn, VFX — KHÔNG Instantiate/Destroy
-using UnityEngine.Pool;
-private ObjectPool<GameObject> _pool;
-
-// 3. Animator hash — KHÔNG dùng string
-private static readonly int _walkHash = Animator.StringToHash("Walk");
-_animator.cullingMode = AnimatorCullingMode.CullCompletely;
-
-// 4. MaterialPropertyBlock — KHÔNG material.color (đã áp dụng trong TowerSocket)
-
-// 5. Tất cả prop tĩnh trên map: đánh Static trong Inspector
-```
-
-### ScriptableObject cho mọi data
-
-- Mọi số liệu (stats, cost, prefab ref) → ScriptableObject, KHÔNG hardcode
-- Naming: `EnemyDataSO`, `TowerDataSO`, `WaveDataSO`
-
-### Event system — decouple
-
-```csharp
-// Tower KHÔNG gọi enemy trực tiếp
-// Enemy publish event, Tower/Manager subscribe
-public event Action<float> OnDamageTaken;
-public event Action OnDied;
-// Tower dùng interface IDamageable, không import class Enemy
-```
-
-### Naming convention
-
-| Type             | Convention                         | Ví dụ                                     |
-| ---------------- | ---------------------------------- | ------------------------------------------- |
-| Private field    | `_camelCase`                     | `_currentHealth`                          |
-| SerializeField   | `private` + `[SerializeField]` | `[SerializeField] private UnitData _data` |
-| Interface        | `I` prefix                       | `IDamageable`                             |
-| ScriptableObject | `SO` suffix                      | `EnemyDataSO`                             |
-| Event            | `On` prefix                      | `OnEnemyDied`                             |
-
-### File limits
-
-- 1 class = 1 file, tên file = tên class
-- Method tối đa 50 dòng
-- Class tối đa 200 dòng
-- `Debug.Log` chỉ trong `#if UNITY_EDITOR`
+**Giải pháp hiện tại cho "quái dàn hàng"**: không ép lane bằng code — để `Separation Force` + `Wall Force` (tự thích ứng theo road mesh thật) tự nhiên dàn quái trong bề rộng đường, đường rộng dàn nhiều, đường hẹp tự nén lại.
 
 ---
 
-## Roadmap Còn Lại
+## X. GAMEPLAY LAYER (áp dụng trên Core Waypoint mới)
 
-### Milestone 2 — Enemy chạy được (Đang làm)
+> Thiết kế nội dung, không phải kiến trúc engine — vẫn chạy được trên nền Waypoint.
 
-- `EnemyDataSO`: maxHealth, moveSpeed, goldReward, prefab
-- `EnemyHealth` component: máu, nhận IDamageable.TakeDamage(), event OnDied
-- `EnemyMovement` component: đi theo waypoint tĩnh trước, sau thay bằng A*
-- `EnemyPool`: UnityEngine.Pool.ObjectPool, size mặc định 20
-- `WaveManager`: spawn enemy từ pool theo thời gian
+- **5 Vùng Đất × Khuyết Tật**: mỗi theme map khóa 1 Class quân đội (Pháo Binh/Cung Thủ/Pháp Sư/Đấu Sĩ/Sát Thủ).
+- **Deck 6 thẻ kiểu TFT**: thuần chủng (buff tối thượng) vs lai (vá lỗ hổng Class).
+- **Thủ Tĩnh (Socket)** vs **Thả Động (Free Deploy)**: 2 luồng đặt quân theo `PlacementMode`.
 
-### Milestone 3 — A* Pathfinding
+### Socket System — giữ nguyên quyết định đã chốt
 
-- `AStarPathfinder`: class thuần (KHÔNG MonoBehaviour), dùng MinHeap tự code
-- `EnemyMovement` gọi FindPath() khi spawn
-- Khi tower cắm → GridManager.SetWalkable(false) → trigger recalculate path toàn bộ enemy đang sống
+```
+Map Editor (Build-time)              Gameplay (Runtime)
+────────────────────────             ──────────────────
+Người chơi đặt tọa độ Socket    →    Người chơi cắm thẻ Unit
+trong danh sách towerSockets          vào Socket (PlugUnit
+của Map Data.                         qua PlacementManager)
+```
 
-### Milestone 4 — Tower bắn
-
-- `TowerDetector`: Physics.OverlapSphere tìm enemy trong attackRange
-- `TowerShooter`: spawn đạn từ pool, rotate về target, gọi IDamageable
-- `ProjectilePool`: pool đạn riêng
-- Stats lấy từ `CurrentUnitData` trong TowerSocket (damage, attackRange, attackSpeed)
-
-### Milestone 5 — UI & Economy
-
-- `CardUI`: hiện thẻ Unit, click → PlacementManager.SelectUnitCard()
-- `HandUI`: quản lý danh sách thẻ được chọn trước trận
-- `GameManager`: gold, base HP, win/lose condition
-- Faction synergy system (TFT style — kích hoạt khi đủ X quân cùng Faction)
+- **Build-time**: tọa độ Socket lưu trong `List<Vector3> towerSockets` của Map Data, cùng lúc với Waypoint.
+- **Runtime**: `MapSerializer` đọc JSON → sinh prefab `TowerSocket` tại các tọa độ đó → người chơi chọn thẻ, click Socket trống → `PlugUnit()`.
+- **Validation**: Socket bắt buộc không chạm layer `Road` thật (mục V) → không cần enemy target/attack tháp, không cần physics phá tháp.
 
 ---
 
-## Cách Dùng File Này
+## XI. CÁCH DÙNG FILE NÀY
 
 **Trả lời bằng tiếng Việt, code và comment bằng tiếng Anh.**
 
-Trước khi viết code mới, hãy:
+Trước khi viết code mới, luôn nêu:
+1. Component nào sẽ tạo (tên Class, mục đích)
+2. Interface nào implement (`IDamageable`, `IPoolable`...)
+3. Event nào publish/subscribe qua Event Bus
+4. File đặt ở thư mục nào (theo mục VII)
 
-1. Nêu component sẽ tạo
-2. Interface nào nó implement
-3. Event nào nó publish/subscribe
-4. File đặt ở thư mục nào
-
-Không tạo subclass để làm loại enemy/tower mới.
-Không dùng NavMesh — dự án tự code A* để học thuật toán.
-Không dùng Resources.Load — dùng SerializeField reference trực tiếp.
-Không thêm package bên ngoài khi chưa hỏi.
+**Nghiêm cấm:**
+- Set `transform.position` trực tiếp trong `Update()`, trừ class Steering
+- Tạo subclass để làm loại enemy/tower mới (composition, không inheritance)
+- Dùng NavMesh / A* / Flow Field / Grid-based pathfinding cho bất kỳ enemy nào
+- Hardcode độ rộng đường bằng hằng số — mọi kiểm tra độ rộng/mép đường phải đọc từ road mesh/Collider thật
+- Dùng `Resources.Load()`
+- Singleton bừa bãi — chỉ Core tĩnh (`EventBus`, `ObjectPool`) mới được phép
+- Thêm package bên ngoài khi chưa hỏi
+- Gọi `GetComponent` trong `Update`
+- Dùng `Instantiate`/`Destroy` cho enemy/đạn/VFX — luôn qua Object Pool
+- Lưu path đã bo góc/Collider mép đường đã bake vào Save — chỉ lưu Map Data gốc, luôn dựng lại khi Load

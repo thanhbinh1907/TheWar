@@ -13,10 +13,9 @@ namespace TowerDefense.Enemy
 		private bool _isMoving;
 
 		[SerializeField] private EnemySteering _steering;
-		private int _currentWaypointIndex;
-		private PathData _assignedPath;
-
-
+		
+		private List<BakedSegment> _bakedSegments;
+		private int _currentSegmentIndex;
 
 		// Event triggered when the enemy successfully reaches the final waypoint (base)
 		public event Action OnReachedBaseEvent;
@@ -26,8 +25,15 @@ namespace TowerDefense.Enemy
 			_data = data;
 			_targetPosition = targetPosition;
 			_isMoving = true;
+		}
 
-
+		/// <summary>
+		/// Nhận danh sách các đoạn đường đã được phân tích độ rộng an toàn từ Map
+		/// </summary>
+		public void AssignPath(List<BakedSegment> bakedSegments)
+		{
+			_bakedSegments = bakedSegments;
+			_currentSegmentIndex = 0;
 		}
 
 		private void OnDisable()
@@ -40,57 +46,58 @@ namespace TowerDefense.Enemy
 		{
 			if (!_isMoving) return;
 
-			MoveAlongWaypoint();
+			MoveAlongAdaptivePath();
 		}
 
-		public void AssignPath(PathData path)
+		private void MoveAlongAdaptivePath()
 		{
-			_assignedPath = path;
-			_currentWaypointIndex = 0;
-		}
-
-		private void MoveAlongWaypoint()
-		{
-			if (_assignedPath == null)
+			if (_bakedSegments == null || _bakedSegments.Count == 0)
 			{
-				Debug.LogError($"[EnemyMovement] _assignedPath is NULL! Cannot move.");
+				Debug.LogError($"[EnemyMovement] _bakedSegments is empty or null! Cannot move.");
 				return;
 			}
-			if (_assignedPath.waypointPositions == null || _assignedPath.waypointPositions.Count == 0)
-			{
-				Debug.LogError($"[EnemyMovement] waypointPositions is empty! Cannot move.");
-				return;
-			}
+			
 			if (_steering == null)
 			{
 				Debug.LogError($"[EnemyMovement] _steering is NULL! Cannot move.");
 				return;
 			}
 
-			if (_currentWaypointIndex >= _assignedPath.waypointPositions.Count)
+			// Nếu đã chạy hết các mảng đường -> tới đích
+			if (_currentSegmentIndex >= _bakedSegments.Count)
 			{
 				OnReachedBase();
 				return;
 			}
 
-			Vector3 targetWaypoint = _assignedPath.waypointPositions[_currentWaypointIndex];
+			BakedSegment currentSegment = _bakedSegments[_currentSegmentIndex];
 			Vector3 currentPos = transform.position;
 
-			Vector3 velocity = _steering.CalculateSeekForce(currentPos, targetWaypoint, _data.MoveSpeed);
+			// Lấy mục tiêu ảo di động và tiến độ (progress)
+			Vector3 adaptiveTarget = _steering.CalculateAdaptivePathTarget(currentPos, currentSegment, out float progress);
+			
+			// Tính vận tốc Seek tới mục tiêu ảo + Lực đẩy Separation né nhau
+			Vector3 velocity = _steering.CalculateVelocity(currentPos, adaptiveTarget, _data.MoveSpeed);
+			
+			// Cập nhật vị trí thông qua Velocity thay vì thay đổi transform.position cục súc
 			transform.position += velocity * Time.deltaTime;
 
+			// Slerp mượt mà mặt nhìn theo hướng vận tốc
 			if (velocity.sqrMagnitude > 0.001f)
 			{
-				transform.rotation = Quaternion.LookRotation(velocity.normalized);
+				Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 			}
 
-			if (Vector3.Distance(currentPos, targetWaypoint) < 0.3f)
+			// Tính khoảng cách chiếu từ vị trí quái lên trục đường hướng tới mặt phẳng EndNode
+			float distanceToTargetPlane = Vector3.Dot(currentSegment.EndNode - currentPos, (currentSegment.EndNode - currentSegment.StartNode).normalized);
+
+			// Chuyển sang đoạn tiếp theo nếu tiến trình gần xong, HOẶC cách mặt phẳng EndNode dưới 0.5f (giúp bẻ cua sớm, chống kẹt vật lý)
+			if (progress >= 0.98f || distanceToTargetPlane < 0.5f)
 			{
-				_currentWaypointIndex++;
+				_currentSegmentIndex++;
 			}
 		}
-
-
 
 		private void OnReachedBase()
 		{
@@ -103,9 +110,7 @@ namespace TowerDefense.Enemy
 		public void OnGetFromPool()
 		{
 			_isMoving = false;
-			_currentWaypointIndex = 0;
-
-
+			_currentSegmentIndex = 0;
 		}
 
 		public void OnReturnToPool()
@@ -113,7 +118,5 @@ namespace TowerDefense.Enemy
 			_isMoving = false;
 			gameObject.SetActive(false);
 		}
-
-
 	}
 }

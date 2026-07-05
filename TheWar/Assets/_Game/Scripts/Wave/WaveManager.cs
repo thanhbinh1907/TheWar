@@ -125,12 +125,12 @@ namespace TowerDefense.Wave
 			
 			if (_pathContainer != null)
 			{
-				PathData path = _pathContainer.GetPath(_pathId);
-				if (path == null)
+				List<BakedSegment> bakedSegments = _pathContainer.GetBakedSegments(_pathId);
+				if (bakedSegments == null || bakedSegments.Count == 0)
 				{
-					Debug.LogError($"[WaveManager] Không tìm thấy PathData nào có pathId là '{_pathId}' trong PathContainer! Vui lòng kiểm tra lại Inspector của PathContainer.");
+					Debug.LogError($"[WaveManager] Không thể tạo/tìm thấy BakedSegments cho pathId '{_pathId}'! Vui lòng kiểm tra lại PathContainer.");
 				}
-				movement.AssignPath(path);
+				movement.AssignPath(bakedSegments);
 			}
 			else
 			{
