@@ -9,6 +9,7 @@ namespace TowerDefense.Enemy
 		[SerializeField] private float _maxHealth = 50f;
 		[SerializeField] private float _moveSpeed = 3f;
 		[SerializeField] private int _goldReward = 10;
+		[SerializeField] private int _damageToBase = 1;
 		[SerializeField] private GameObject _enemyPrefab;
 		[SerializeField] private float _damage = 5f;
 		[SerializeField] private float _attackSpeed = 1f;
@@ -18,6 +19,7 @@ namespace TowerDefense.Enemy
 		public float MaxHealth => _maxHealth;
 		public float MoveSpeed => _moveSpeed;
 		public int GoldReward => _goldReward;
+		public int DamageToBase => _damageToBase;
 		public GameObject EnemyPrefab => _enemyPrefab;
 		public float Damage => _damage;
 		public float AttackSpeed => _attackSpeed;

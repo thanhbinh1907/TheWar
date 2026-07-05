@@ -2401,6 +2401,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 72138812}
+  - component: {fileID: 72138813}
   - component: {fileID: 72138811}
   m_Layer: 0
   m_Name: GameManager
@@ -2436,6 +2437,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &72138813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72138810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6451b477d9c0a9a4cbb06368e58378dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.GameManager
+  _startingBaseHealth: 20
+  _startingGold: 100
 --- !u!1 &72819791
 GameObject:
   m_ObjectHideFlags: 0
@@ -14436,7 +14451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096b1c799ed3eac41befb721d3d0efbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.PlacementManager
-  _selectedUnit: {fileID: 11400000, guid: 3220db69cf6665b4d8081201ca2ca645, type: 2}
+  _selectedUnit: {fileID: 11400000, guid: 7bb6ca47f29f0a941a79765ef6ee9887, type: 2}
 --- !u!1 &449584441
 GameObject:
   m_ObjectHideFlags: 0

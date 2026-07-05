@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TowerDefense.Shared;
 using TowerDefense.Core;
+using TowerDefense.Core.Events;
 
 namespace TowerDefense.Enemy
 {
@@ -115,6 +116,10 @@ namespace TowerDefense.Enemy
 		private void OnReachedBase()
 		{
 			_isMoving = false;
+
+			// Publish GoalReachedEvent
+			EventBus.Publish(new GoalReachedEvent { damageToBase = _data.DamageToBase });
+
 			// Invoke event so WaveManager (or GameManager) can release this object back to pool
 			OnReachedBaseEvent?.Invoke();
 		}

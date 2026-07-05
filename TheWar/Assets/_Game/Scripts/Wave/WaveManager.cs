@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TowerDefense.Enemy;
 using TowerDefense.Shared;
+using TowerDefense.Core;
+using TowerDefense.Core.Events;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -95,9 +97,7 @@ namespace TowerDefense.Wave
 				}
 			}
 
-			#if UNITY_EDITOR
-			Debug.Log("Level Complete! Victory!");
-			#endif
+			EventBus.Publish(new GameWinEvent());
 		}
 
 		private IEnumerator SpawnWave(WaveDataSO wave)

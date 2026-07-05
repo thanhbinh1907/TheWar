@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using TowerDefense.Shared;
+using TowerDefense.Core;
+using TowerDefense.Core.Events;
 
 namespace TowerDefense.Enemy
 {
@@ -64,7 +66,16 @@ namespace TowerDefense.Enemy
 
 		private void Die()
 		{
+			if (_isDead) return;
+
 			_isDead = true;
+
+			// Trả thưởng vàng TRƯỚC khi gọi OnDied (để WaveManager thu hồi)
+			if (_enemyData != null)
+			{
+				EventBus.Publish(new EnemyDiedEvent { goldReward = _enemyData.GoldReward });
+			}
+
 			OnDied?.Invoke();
 
 #if UNITY_EDITOR
