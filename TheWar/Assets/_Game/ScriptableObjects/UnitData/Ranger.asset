@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Ranger
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
   _unitName: 
-  _unitClass: 0
+  _unitClass: 1
   _faction: 0
   _damage: 10
   _attackRange: 5
   _attackSpeed: 1
+  _projectilePrefab: {fileID: 1806739048747957755, guid: 72868f1a7555fbd45a8681951c571c48, type: 3}
   _unitColor: {r: 0, g: 0.1963225, b: 0.6320754, a: 1}

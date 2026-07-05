@@ -195,3 +195,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947a9c3e317e2824c8788035e5e269a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySteering
+  _separationRadius: 0.68
+  _separationWeight: 3
+  _lookAheadDistance: 1

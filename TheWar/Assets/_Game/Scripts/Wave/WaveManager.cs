@@ -28,6 +28,12 @@ namespace TowerDefense.Wave
 		// Static getter để các Enemy truy vấn vị trí Base của màn chơi
 		public static Vector3 BasePosition { get; private set; }
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics()
+		{
+			BasePosition = Vector3.zero;
+		}
+
 		private void Awake()
 		{
 			// Gán BasePosition từ phần tử cuối cùng trong list waypoint transforms

@@ -3,22 +3,26 @@ using UnityEngine;
 public class EnemySteering : MonoBehaviour
 {
     [Header("Separation (Dàn ngang mặt đường)")]
-    [SerializeField] private float _separationRadius = 2.5f;
+    [SerializeField] private float _separationRadius = 1.0f;
     [SerializeField] private float _separationWeight = 3f;
 
     [Header("Adaptive Path Following")]
     [SerializeField] private float _lookAheadDistance = 1.0f;
     
-    private Vector3 _separationForce;
+    private Vector3 _targetSeparationForce;
+    private Vector3 _currentSeparationForce;
     private float _normalizedLaneFactor;
         
     public Vector3 CurrentVelocity { get; private set; }
 
     private void OnEnable()
     {
-        // Randomize lane position for this enemy: -1 (left edge) to 1 (right edge)
-        _normalizedLaneFactor = Random.Range(-1f, 1f);
+        // Giảm range xuống một chút nữa để quái không đi quá sát mép
+        _normalizedLaneFactor = Random.Range(-0.5f, 0.5f);
         InvokeRepeating(nameof(CalculateSeparationForce), 0.1f, 0.1f);
+        
+        _currentSeparationForce = Vector3.zero;
+        _targetSeparationForce = Vector3.zero;
     }
 
     private void OnDisable()
@@ -62,21 +66,27 @@ public class EnemySteering : MonoBehaviour
     /// </summary>
     public Vector3 CalculateVelocity(Vector3 currentPos, Vector3 targetPos, float maxSpeed)
     {
+        // Làm mượt lực Separation để quái không bị lắc lư mỗi 0.1s
+        _currentSeparationForce = Vector3.Lerp(_currentSeparationForce, _targetSeparationForce, Time.deltaTime * 5f);
+
         Vector3 desiredVelocity = (targetPos - currentPos).normalized * maxSpeed;
-        CurrentVelocity = desiredVelocity + _separationForce;
+        Vector3 targetVelocity = desiredVelocity + _currentSeparationForce;
             
         // Limit to max speed
-        if (CurrentVelocity.sqrMagnitude > maxSpeed * maxSpeed)
+        if (targetVelocity.sqrMagnitude > maxSpeed * maxSpeed)
         {
-            CurrentVelocity = CurrentVelocity.normalized * maxSpeed;
+            targetVelocity = targetVelocity.normalized * maxSpeed;
         }
+        
+        // Smoothly interpolate velocity to prevent stuttering/jittering when target jumps at corners
+        CurrentVelocity = Vector3.Lerp(CurrentVelocity, targetVelocity, Time.deltaTime * 12f);
             
         return CurrentVelocity;
     }
 
     private void CalculateSeparationForce()
     {
-        _separationForce = Vector3.zero;
+        _targetSeparationForce = Vector3.zero;
         int enemyLayer = LayerMask.GetMask("Enemy");
         
         // Use OverlapSphere to detect nearby enemies for separation
@@ -89,15 +99,23 @@ public class EnemySteering : MonoBehaviour
             {
                 Vector3 awayFromNeighbor = transform.position - col.transform.position;
                 // Force increases as they get closer
-                _separationForce += awayFromNeighbor.normalized / (awayFromNeighbor.magnitude + 0.1f);
+                _targetSeparationForce += awayFromNeighbor.normalized / (awayFromNeighbor.magnitude + 0.1f);
                 count++;
             }
         }
 
         if (count > 0)
         {
-            _separationForce /= count;
-            _separationForce = _separationForce.normalized * _separationWeight; 
+            _targetSeparationForce /= count;
+            _targetSeparationForce = _targetSeparationForce.normalized * _separationWeight; 
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(0f, 1f, 1f, 0.5f); // Màu xanh dương nhạt để dễ nhìn
+        Gizmos.DrawWireSphere(transform.position, _separationRadius);
+    }
+#endif
 }

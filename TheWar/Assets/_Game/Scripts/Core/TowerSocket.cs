@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TowerDefense.Tower;
+using TowerDefense.Gameplay.Tower;
 
 namespace TowerDefense.Core
 {
@@ -9,15 +10,23 @@ namespace TowerDefense.Core
 		// Static list tracking all currently occupied/active towers
 		public static List<TowerSocket> ActiveTowers { get; } = new List<TowerSocket>();
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics()
+		{
+			ActiveTowers.Clear();
+		}
+
 		public bool IsOccupied { get; private set; }
 		public UnitData CurrentUnitData { get; private set; }
 		private MeshRenderer _meshRenderer;
 		private TowerHealth _health;
+		private TowerShooter _towerShooter;
 
 		private void Awake()
 		{
 			_meshRenderer = GetComponent<MeshRenderer>();
 			_health = GetComponent<TowerHealth>();
+			_towerShooter = GetComponent<TowerShooter>();
 		}
 
 		private void Start()
@@ -102,12 +111,22 @@ namespace TowerDefense.Core
 			Debug.Log($"[Socket] Đã cắm thành công Lõi: {data.UnitName} vào chiếc tháp này!");
 #endif
 
+			if (_towerShooter != null)
+			{
+				_towerShooter.Initialize(data);
+			}
+
 			// Cắm xong thì xóa thẻ đang cầm trên tay đi
 			PlacementManager.Instance.ClearSelection();
 		}
 
 		public void UnplugUnit()
 		{
+			if (_towerShooter != null)
+			{
+				_towerShooter.StopShooting();
+			}
+
 			IsOccupied = false;
 			CurrentUnitData = null;
 			ActiveTowers.Remove(this);

@@ -11,6 +11,12 @@ namespace TowerDefense.Core
 		// Encapsulated property
 		public UnitData SelectedUnit => _selectedUnit;
 
+		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		private static void ResetStatics()
+		{
+			Instance = null;
+		}
+
 		private void Awake()
 		{
 			if (Instance == null)

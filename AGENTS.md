@@ -233,6 +233,25 @@ Do NOT subclass `Tower` to create new tower types.
 
 ---
 
+## Fast Play Mode (No Domain Reload) Rules
+
+This project runs with **Domain Reload disabled** for fast Play Mode iteration.
+- If you declare a `static` variable, `Action`, or `Singleton`, it will NOT automatically reset when restarting Play Mode.
+- You MUST manually reset all static variables using `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`.
+
+```csharp
+// ✅ Correct — manual reset for No Domain Reload
+private static ProjectilePool _instance;
+
+[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+private static void ResetStatics()
+{
+    _instance = null;
+}
+```
+
+---
+
 ## Commit Convention
 
 ```

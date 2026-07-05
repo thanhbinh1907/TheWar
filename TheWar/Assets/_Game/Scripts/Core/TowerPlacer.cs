@@ -18,6 +18,11 @@ namespace TowerDefense.Core
 			// Nếu click trúng vào một bệ tháp đã có sẵn, để TowerSocket tự xử lý, không spawn tháp mới
 			if (hit.collider.GetComponent<TowerSocket>() != null) return;
 
+			// Đoạn code dưới đây đã bị vô hiệu hóa vì theo yêu cầu:
+			// "Chỉ cho phép cắm thẻ vào các bệ tháp (Tower Socket) đã có sẵn."
+			// Việc cắm thẻ hiện tại được xử lý trực tiếp bên trong sự kiện OnMouseDown() của class TowerSocket.cs.
+			
+			/*
 			// Lấy tọa độ từ vị trí click chuột
 			Vector3 spawnPos = hit.point;
 
@@ -26,6 +31,7 @@ namespace TowerDefense.Core
 
 			// Cắm unit vào tower ngay lập tức
 			tower.GetComponent<TowerSocket>().PlugUnit(PlacementManager.Instance.SelectedUnit);
+			*/
 		}
 	}
 }

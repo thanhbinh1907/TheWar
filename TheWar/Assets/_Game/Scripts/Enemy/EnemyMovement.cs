@@ -90,10 +90,15 @@ namespace TowerDefense.Enemy
 			}
 
 			// Tính khoảng cách chiếu từ vị trí quái lên trục đường hướng tới mặt phẳng EndNode
-			float distanceToTargetPlane = Vector3.Dot(currentSegment.EndNode - currentPos, (currentSegment.EndNode - currentSegment.StartNode).normalized);
+			Vector3 segmentDir = currentSegment.EndNode - currentSegment.StartNode;
+			float segmentLength = segmentDir.magnitude;
+			float distanceToTargetPlane = Vector3.Dot(currentSegment.EndNode - currentPos, segmentDir.normalized);
 
-			// Chuyển sang đoạn tiếp theo nếu tiến trình gần xong, HOẶC cách mặt phẳng EndNode dưới 0.5f (giúp bẻ cua sớm, chống kẹt vật lý)
-			if (progress >= 0.98f || distanceToTargetPlane < 0.5f)
+			// Ngưỡng bẻ cua sớm: không vượt quá 20% chiều dài đoạn đường (chống skip hẳn các đoạn cua ngắn)
+			float earlySwitchThreshold = Mathf.Min(0.5f, segmentLength * 0.2f);
+
+			// Chuyển sang đoạn tiếp theo nếu tiến trình gần xong, HOẶC đã chạm ngưỡng bẻ cua
+			if (progress >= 0.98f || distanceToTargetPlane < earlySwitchThreshold)
 			{
 				_currentSegmentIndex++;
 			}

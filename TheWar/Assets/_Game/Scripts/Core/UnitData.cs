@@ -16,6 +16,7 @@ namespace TowerDefense.Core
 		[SerializeField] private float _damage = 10f;
 		[SerializeField] private float _attackRange = 5f;
 		[SerializeField] private float _attackSpeed = 1f; 
+		[SerializeField] private GameObject _projectilePrefab;
 
 		[Header("Visual")]
 		[SerializeField] private Color _unitColor = Color.white;
@@ -27,6 +28,7 @@ namespace TowerDefense.Core
 		public float Damage => _damage;
 		public float AttackRange => _attackRange;
 		public float AttackSpeed => _attackSpeed;
+		public GameObject ProjectilePrefab => _projectilePrefab;
 		public Color UnitColor => _unitColor;
 	}
 }
