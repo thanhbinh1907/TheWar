@@ -11,6 +11,7 @@ namespace TowerDefense.Enemy
 		private EnemyDataSO _data;
 		private Vector3 _targetPosition;
 		private bool _isMoving;
+		private bool _isMovementPaused;
 
 		[SerializeField] private EnemySteering _steering;
 		
@@ -36,6 +37,11 @@ namespace TowerDefense.Enemy
 			_currentSegmentIndex = 0;
 		}
 
+		public void SetMovementPaused(bool paused)
+		{
+			_isMovementPaused = paused;
+		}
+
 		private void OnDisable()
 		{
 			// Clear event subscriptions to prevent memory leaks in ObjectPool
@@ -51,6 +57,8 @@ namespace TowerDefense.Enemy
 
 		private void MoveAlongAdaptivePath()
 		{
+			if (_isMovementPaused) return;
+
 			if (_bakedSegments == null || _bakedSegments.Count == 0)
 			{
 				Debug.LogError($"[EnemyMovement] _bakedSegments is empty or null! Cannot move.");

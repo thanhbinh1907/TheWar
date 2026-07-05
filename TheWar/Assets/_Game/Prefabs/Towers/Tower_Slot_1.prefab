@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: -4165762120609792124}
   - component: {fileID: 9011173557526210331}
   - component: {fileID: 1998330617008766175}
+  - component: {fileID: 3137042210247482686}
   m_Layer: 0
   m_Name: Tower_Slot_1
   m_TagString: Untagged
@@ -167,6 +168,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.TowerShooter
   _firePoint: {fileID: 724730823502540598}
+--- !u!114 &3137042210247482686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966749921919975693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 431a1e23285a324468007839cbcb1b93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.TowerSpawner
+  _guardSpacing: 1.5
+  _guardCount: 3
 --- !u!1 &8046118100222137539
 GameObject:
   m_ObjectHideFlags: 0

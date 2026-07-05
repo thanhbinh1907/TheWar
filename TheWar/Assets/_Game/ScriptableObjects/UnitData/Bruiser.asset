@@ -10,13 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
-  m_Name: Ranger
+  m_Name: Bruiser
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
-  _unitName: Ranger
-  _unitClass: 1
+  _unitName: Bruiser
+  _unitClass: 0
   _faction: 0
+  _deployMode: 1
   _damage: 10
   _attackRange: 5
   _attackSpeed: 1
-  _projectilePrefab: {fileID: 1806739048747957755, guid: 72868f1a7555fbd45a8681951c571c48, type: 3}
-  _unitColor: {r: 0, g: 0.1963225, b: 0.6320754, a: 1}
+  _projectilePrefab: {fileID: 0}
+  _deployPrefab: {fileID: 475538727398983810, guid: 8757c701e6295a74a9ffa48736c3dcac, type: 3}
+  _unitColor: {r: 0.2830189, g: 0.1294945, b: 0.1294945, a: 1}

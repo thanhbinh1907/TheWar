@@ -10,6 +10,8 @@ namespace TowerDefense.Enemy
 		[SerializeField] private float _moveSpeed = 3f;
 		[SerializeField] private int _goldReward = 10;
 		[SerializeField] private GameObject _enemyPrefab;
+		[SerializeField] private float _damage = 5f;
+		[SerializeField] private float _attackSpeed = 1f;
 		[SerializeField] private bool _canLeaveRoad = false;
 
 		// Public getters to strictly enforce encapsulation
@@ -17,6 +19,8 @@ namespace TowerDefense.Enemy
 		public float MoveSpeed => _moveSpeed;
 		public int GoldReward => _goldReward;
 		public GameObject EnemyPrefab => _enemyPrefab;
+		public float Damage => _damage;
+		public float AttackSpeed => _attackSpeed;
 		public bool CanLeaveRoad => _canLeaveRoad;
 	}
 }

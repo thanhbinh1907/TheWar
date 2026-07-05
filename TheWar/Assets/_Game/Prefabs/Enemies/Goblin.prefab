@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: -148726700701046001}
   - component: {fileID: 3144724994991333824}
   - component: {fileID: -631805975405434741}
+  - component: {fileID: -4200174720569423284}
   m_Layer: 9
   m_Name: Goblin
   m_TagString: Untagged
@@ -198,3 +199,19 @@ MonoBehaviour:
   _separationRadius: 0.68
   _separationWeight: 3
   _lookAheadDistance: 1
+--- !u!114 &-4200174720569423284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6910893475199368868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fdbf5d5fe846f843941c88b28e21ca0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Enemy.EnemyCombat
+  _engageRange: 2
+  _guardLayer:
+    serializedVersion: 2
+    m_Bits: 1024

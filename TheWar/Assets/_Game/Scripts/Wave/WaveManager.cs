@@ -149,6 +149,13 @@ namespace TowerDefense.Wave
 			var health = obj.GetComponent<EnemyHealth>();
 			health.Initialize(enemyData);
 			health.OnDied += () => ReleaseEnemy(pool, obj);
+
+			// Init combat
+			var combat = obj.GetComponent<EnemyCombat>();
+			if (combat != null)
+			{
+				combat.Initialize(enemyData);
+			}
 		}
 
 		private void ReleaseEnemy(ObjectPool<GameObject> pool, GameObject enemy)

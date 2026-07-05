@@ -14392,7 +14392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096b1c799ed3eac41befb721d3d0efbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.PlacementManager
-  _selectedUnit: {fileID: 0}
+  _selectedUnit: {fileID: 11400000, guid: 3220db69cf6665b4d8081201ca2ca645, type: 2}
 --- !u!1 &449584441
 GameObject:
   m_ObjectHideFlags: 0
@@ -24116,7 +24116,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44219dd6924c37f4294f952544fc836e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.TowerPlacer
-  _towerSocketPrefab: {fileID: 2966749921919975693, guid: 8f4186e05b1fc9f40a48c542a9c93b74, type: 3}
   _camera: {fileID: 330585545}
 --- !u!4 &750845874
 Transform:

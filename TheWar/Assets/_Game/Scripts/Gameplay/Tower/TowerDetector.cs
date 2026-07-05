@@ -7,7 +7,6 @@ namespace TowerDefense.Gameplay.Tower
     {
         private float _attackRange;
         private Coroutine _detectionCoroutine;
-        private static readonly int ENEMY_LAYER_MASK = 1 << 6; // Adjust based on your layers. Usually 6, 7 or 8. We'll use LayerMask.GetMask.
         private int _enemyLayerMask;
 
         public Transform CurrentTarget { get; private set; }

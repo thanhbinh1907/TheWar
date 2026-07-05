@@ -21,12 +21,14 @@ namespace TowerDefense.Core
 		private MeshRenderer _meshRenderer;
 		private TowerHealth _health;
 		private TowerShooter _towerShooter;
+		private TowerSpawner _towerSpawner;
 
 		private void Awake()
 		{
 			_meshRenderer = GetComponent<MeshRenderer>();
 			_health = GetComponent<TowerHealth>();
 			_towerShooter = GetComponent<TowerShooter>();
+			_towerSpawner = GetComponent<TowerSpawner>();
 		}
 
 		private void Start()
@@ -77,6 +79,15 @@ namespace TowerDefense.Core
 				return;
 			}
 
+			// 2.5 Kiểm tra xem loại thẻ này có cắm được vào tháp không
+			if (PlacementManager.Instance.SelectedUnit.DeployMode == DeployMode.FreeDeploy)
+			{
+#if UNITY_EDITOR
+				Debug.Log("Thẻ này dùng để thả tự do, không cắm vào tháp được!");
+#endif
+				return;
+			}
+
 			// 3. Nếu thỏa mãn hết, tiến hành hấp thụ quân cờ
 			PlugUnit(PlacementManager.Instance.SelectedUnit);
 		}
@@ -111,9 +122,13 @@ namespace TowerDefense.Core
 			Debug.Log($"[Socket] Đã cắm thành công Lõi: {data.UnitName} vào chiếc tháp này!");
 #endif
 
-			if (_towerShooter != null)
+			if (data.DeployMode == DeployMode.SocketRanged && _towerShooter != null)
 			{
 				_towerShooter.Initialize(data);
+			}
+			else if (data.DeployMode == DeployMode.SocketSpawner && _towerSpawner != null)
+			{
+				_towerSpawner.Initialize(data);
 			}
 
 			// Cắm xong thì xóa thẻ đang cầm trên tay đi
@@ -122,9 +137,16 @@ namespace TowerDefense.Core
 
 		public void UnplugUnit()
 		{
-			if (_towerShooter != null)
+			if (CurrentUnitData != null)
 			{
-				_towerShooter.StopShooting();
+				if (CurrentUnitData.DeployMode == DeployMode.SocketRanged && _towerShooter != null)
+				{
+					_towerShooter.StopShooting();
+				}
+				else if (CurrentUnitData.DeployMode == DeployMode.SocketSpawner && _towerSpawner != null)
+				{
+					_towerSpawner.DespawnGuards();
+				}
 			}
 
 			IsOccupied = false;

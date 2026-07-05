@@ -24,7 +24,7 @@ public static class PathValidator
 
         // Kiểm tra khoảng cách từ tâm đường (centerline) đến các Socket/Obstacle
         float minDistance = roadWidth / 2f;
-        var sockets = Object.FindObjectsOfType<TowerDefense.Core.TowerSocket>();
+        var sockets = Object.FindObjectsByType<TowerDefense.Core.TowerSocket>(FindObjectsSortMode.None);
         if (sockets != null)
         {
             foreach (var socket in sockets)
