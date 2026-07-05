@@ -16,4 +16,6 @@ MonoBehaviour:
   _moveSpeed: 3
   _goldReward: 10
   _enemyPrefab: {fileID: 6910893475199368868, guid: dc49a56d32e9cc9419f62d213a894761, type: 3}
+  _damage: 10
+  _attackSpeed: 1
   _canLeaveRoad: 1

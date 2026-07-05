@@ -23,8 +23,8 @@ namespace TowerDefense.Gameplay.Tower
 		{
 			_data = data;
 			_spawner = spawner;
-			// Tạm dùng Damage * 10 làm máu cho lính gác (vì UnitData hiện tại chưa có MaxHealth)
-			_currentHealth = _data.Damage * 10f; 
+			// Sử dụng MaxHealth từ UnitData
+			_currentHealth = _data.MaxHealth; 
 		}
 
 		public bool TryOccupy(GameObject enemy)

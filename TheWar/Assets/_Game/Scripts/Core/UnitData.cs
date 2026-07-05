@@ -15,6 +15,7 @@ namespace TowerDefense.Core
 		[SerializeField] private DeployMode _deployMode;
 
 		[Header("Combat Stats")]
+		[SerializeField] private float _maxHealth = 100f;
 		[SerializeField] private float _damage = 10f;
 		[SerializeField] private float _attackRange = 5f;
 		[SerializeField] private float _attackSpeed = 1f; 
@@ -29,6 +30,7 @@ namespace TowerDefense.Core
 		public UnitClass UnitClass => _unitClass;
 		public FactionVoundDat Faction => _faction;
 		public DeployMode DeployMode => _deployMode;
+		public float MaxHealth => _maxHealth;
 		public float Damage => _damage;
 		public float AttackRange => _attackRange;
 		public float AttackSpeed => _attackSpeed;

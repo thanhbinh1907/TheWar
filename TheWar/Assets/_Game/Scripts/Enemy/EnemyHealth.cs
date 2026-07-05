@@ -70,9 +70,6 @@ namespace TowerDefense.Enemy
 #if UNITY_EDITOR
 			Debug.Log($"[{gameObject.name}] Has Died.");
 #endif
-
-			// Temporary deactivate, later handled by ObjectPool
-			gameObject.SetActive(false);
 		}
 	}
 }

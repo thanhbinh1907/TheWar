@@ -15,6 +15,6 @@ MonoBehaviour:
   waveName: 'Only Goblin '
   enemies:
   - enemyData: {fileID: 11400000, guid: 4abd3655d472273479964d548943bb79, type: 2}
-    count: 5
+    count: 1
     spawnInterval: 0.2
     delayBefore: 0.2
