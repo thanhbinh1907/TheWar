@@ -10,12 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4587f020137e189478e5b94f29b88dc0, type: 3}
-  m_Name: Enemy_Goblin
+  m_Name: Enemy_Goblin_Male
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Enemy.EnemyDataSO
   _maxHealth: 50
   _moveSpeed: 2
   _goldReward: 10
-  _enemyPrefab: {fileID: 6910893475199368868, guid: a46475aa1d27ba24e94ef394e092892e, type: 3}
+  _damageToBase: 1
+  _enemyPrefab: {fileID: 5900752905321854006, guid: 108ab5885d7457844b58f9dd5d226790, type: 3}
   _damage: 50
   _attackSpeed: 1
   _canLeaveRoad: 0
+  _idleClip: {fileID: 1827226128182048838, guid: 821b40124ee218f40a660c4a4dd78a70, type: 3}
+  _runClip: {fileID: 1827226128182048838, guid: 81618fbfa052c354fa4b50c57d6512ab, type: 3}
+  _attackClip: {fileID: 1827226128182048838, guid: 47aafab7fd8b103428b97d9560e2cb29, type: 3}
+  _dieClip: {fileID: 0}

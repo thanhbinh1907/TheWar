@@ -14,7 +14,14 @@ namespace TowerDefense.Enemy
 		private bool _isMoving;
 		private bool _isMovementPaused;
 
-		[SerializeField] private EnemySteering _steering;
+		private EnemySteering _steering;
+		private EnemyAnimation _animation;
+		
+		private void Awake()
+		{
+			_steering = GetComponent<EnemySteering>();
+			_animation = GetComponent<EnemyAnimation>();
+		}
 		
 		private List<BakedSegment> _bakedSegments;
 		private int _currentSegmentIndex;
@@ -58,7 +65,11 @@ namespace TowerDefense.Enemy
 
 		private void MoveAlongAdaptivePath()
 		{
-			if (_isMovementPaused) return;
+			if (_isMovementPaused) 
+			{
+				if (_animation != null) _animation.SetMoveSpeed(0f);
+				return;
+			}
 
 			if (_bakedSegments == null || _bakedSegments.Count == 0)
 			{
@@ -90,6 +101,11 @@ namespace TowerDefense.Enemy
 			
 			// Cập nhật vị trí thông qua Velocity thay vì thay đổi transform.position cục súc
 			transform.position += velocity * Time.deltaTime;
+
+			if (_animation != null)
+			{
+				_animation.SetMoveSpeed(velocity.magnitude);
+			}
 
 			// Slerp mượt mà mặt nhìn theo hướng vận tốc
 			if (velocity.sqrMagnitude > 0.001f)
@@ -129,6 +145,7 @@ namespace TowerDefense.Enemy
 		{
 			_isMoving = false;
 			_currentSegmentIndex = 0;
+			if (_animation != null) _animation.SetMoveSpeed(0f);
 		}
 
 		public void OnReturnToPool()

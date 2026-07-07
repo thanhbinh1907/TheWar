@@ -15,6 +15,12 @@ namespace TowerDefense.Enemy
 		[SerializeField] private float _attackSpeed = 1f;
 		[SerializeField] private bool _canLeaveRoad = false;
 
+		[Header("Animations")]
+		[SerializeField] private AnimationClip _idleClip;
+		[SerializeField] private AnimationClip _runClip;
+		[SerializeField] private AnimationClip _attackClip;
+		[SerializeField] private AnimationClip _dieClip;
+
 		// Public getters to strictly enforce encapsulation
 		public float MaxHealth => _maxHealth;
 		public float MoveSpeed => _moveSpeed;
@@ -24,5 +30,10 @@ namespace TowerDefense.Enemy
 		public float Damage => _damage;
 		public float AttackSpeed => _attackSpeed;
 		public bool CanLeaveRoad => _canLeaveRoad;
+
+		public AnimationClip IdleClip => _idleClip;
+		public AnimationClip RunClip => _runClip;
+		public AnimationClip AttackClip => _attackClip;
+		public AnimationClip DieClip => _dieClip;
 	}
 }

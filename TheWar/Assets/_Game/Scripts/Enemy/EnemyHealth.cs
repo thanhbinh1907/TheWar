@@ -8,7 +8,7 @@ namespace TowerDefense.Enemy
 {
 	public class EnemyHealth : MonoBehaviour, IDamageable
 	{
-		[SerializeField] private EnemyDataSO _enemyData;
+		private EnemyDataSO _enemyData;
 
 		private float _currentHealth;
 		private bool _isDead;
