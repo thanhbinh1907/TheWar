@@ -14,6 +14,7 @@ public class EnemySteering : MonoBehaviour
     private float _normalizedLaneFactor;
         
     public Vector3 CurrentVelocity { get; private set; }
+    public Vector3 DesiredDirection { get; private set; }
 
     private void OnEnable()
     {
@@ -70,6 +71,7 @@ public class EnemySteering : MonoBehaviour
         _currentSeparationForce = Vector3.Lerp(_currentSeparationForce, _targetSeparationForce, Time.deltaTime * 5f);
 
         Vector3 desiredVelocity = (targetPos - currentPos).normalized * maxSpeed;
+        DesiredDirection = desiredVelocity.normalized;
         Vector3 targetVelocity = desiredVelocity + _currentSeparationForce;
             
         // Limit to max speed

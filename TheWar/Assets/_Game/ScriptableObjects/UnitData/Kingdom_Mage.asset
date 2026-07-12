@@ -10,15 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
-  m_Name: Mage
+  m_Name: Kingdom_Mage
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
   _unitName: Mage
   _unitClass: 2
   _faction: 0
   _deployMode: 0
+  _maxHealth: 100
   _damage: 25
   _attackRange: 20
   _attackSpeed: 1
   _projectilePrefab: {fileID: 1806739048747957755, guid: 24d0e47b6f33e664cb0e20e0dc0cfd70, type: 3}
-  _deployPrefab: {fileID: 0}
+  _deployPrefab: {fileID: 2811282344208136691, guid: 156fdd80cc418cc46ab675f23f496fc8, type: 3}
   _unitColor: {r: 0.49387893, g: 0.13950694, b: 0.5188679, a: 1}
+  _idleClip: {fileID: 7400000, guid: be797334aa848784d838447aa3d3a0e4, type: 3}
+  _runClip: {fileID: 0}
+  _attackClip: {fileID: 7400000, guid: ecf1c9844e13bbe48a8729667efdc143, type: 3}
+  _victoryClip: {fileID: 0}

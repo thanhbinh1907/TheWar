@@ -24,3 +24,7 @@ Wait for approval if the plan creates more than 2 new files.
 - Do not suggest NavMesh — this project uses custom A* for learning purposes
 - Do not use `Resources.Load` — use direct ScriptableObject references
 - Do not add third-party packages without asking first
+
+## Component Setup Rule (UnitSetup)
+
+Whenever you create a new script/component intended for a Unit (e.g., Tower Unit, Guard Unit, FreeDeploy Unit), you MUST automatically update the corresponding Setup script in `Assets\_Game\Scripts\Gameplay\Tower\UnitSetup\` by adding `[RequireComponent(typeof(NewScript))]`. This ensures the user can always drag 1 single Setup script to attach all dependencies.

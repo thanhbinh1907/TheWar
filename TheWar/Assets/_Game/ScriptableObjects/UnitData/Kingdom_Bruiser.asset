@@ -10,15 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
-  m_Name: Bruiser
+  m_Name: Kingdom_Bruiser
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
   _unitName: Bruiser
   _unitClass: 0
   _faction: 0
   _deployMode: 1
+  _maxHealth: 10000
   _damage: 10
   _attackRange: 5
   _attackSpeed: 1
   _projectilePrefab: {fileID: 0}
-  _deployPrefab: {fileID: 475538727398983810, guid: 8757c701e6295a74a9ffa48736c3dcac, type: 3}
+  _deployPrefab: {fileID: 4917401744698594733, guid: b54781e16bbd4954b8b43f7676c4b591, type: 3}
+  _spawnedGuardPrefab: {fileID: 6818111465738059337, guid: 458cab42074bc524ba2e8e344cbeaecb, type: 3}
   _unitColor: {r: 0.2830189, g: 0.1294945, b: 0.1294945, a: 1}
+  _idleClip: {fileID: 1827226128182048838, guid: 352fde7d0bd37764a8ca41b39a82a7e3, type: 3}
+  _runClip: {fileID: 1827226128182048838, guid: 5791d4bd66e41f247b7be5afd651bc5a, type: 3}
+  _attackClip: {fileID: 1827226128182048838, guid: 13a571f39d40c9449bd2d49df6c84ef4, type: 3}
+  _victoryClip: {fileID: 0}

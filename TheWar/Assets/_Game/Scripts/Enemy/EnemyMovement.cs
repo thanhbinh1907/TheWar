@@ -26,6 +26,8 @@ namespace TowerDefense.Enemy
 		private List<BakedSegment> _bakedSegments;
 		private int _currentSegmentIndex;
 
+		public Transform TargetOverride { get; set; }
+
 		// Event triggered when the enemy successfully reaches the final waypoint (base)
 		public event Action OnReachedBaseEvent;
 
@@ -48,6 +50,12 @@ namespace TowerDefense.Enemy
 		public void SetMovementPaused(bool paused)
 		{
 			_isMovementPaused = paused;
+			if (paused)
+			{
+				var rb = GetComponent<Rigidbody>();
+				if (rb != null && !rb.isKinematic) rb.linearVelocity = Vector3.zero;
+				if (_animation != null) _animation.SetMoveSpeed(0f);
+			}
 		}
 
 		private void OnDisable()
@@ -93,8 +101,19 @@ namespace TowerDefense.Enemy
 			BakedSegment currentSegment = _bakedSegments[_currentSegmentIndex];
 			Vector3 currentPos = transform.position;
 
-			// Lấy mục tiêu ảo di động và tiến độ (progress)
-			Vector3 adaptiveTarget = _steering.CalculateAdaptivePathTarget(currentPos, currentSegment, out float progress);
+			Vector3 adaptiveTarget;
+			float progress = 0f;
+			
+			if (TargetOverride != null)
+			{
+				// Trực tiếp hướng về TargetOverride nếu đang truy đuổi
+				adaptiveTarget = TargetOverride.position;
+			}
+			else
+			{
+				// Lấy mục tiêu ảo di động và tiến độ (progress) trên đường dẫn
+				adaptiveTarget = _steering.CalculateAdaptivePathTarget(currentPos, currentSegment, out progress);
+			}
 			
 			// Tính vận tốc Seek tới mục tiêu ảo + Lực đẩy Separation né nhau
 			Vector3 velocity = _steering.CalculateVelocity(currentPos, adaptiveTarget, _data.MoveSpeed);
@@ -107,25 +126,29 @@ namespace TowerDefense.Enemy
 				_animation.SetMoveSpeed(velocity.magnitude);
 			}
 
-			// Slerp mượt mà mặt nhìn theo hướng vận tốc
-			if (velocity.sqrMagnitude > 0.001f)
+			// Slerp mượt mà mặt nhìn theo hướng thực sự muốn đi (bỏ qua nhiễu từ Separation)
+			if (_steering.DesiredDirection.sqrMagnitude > 0.001f)
 			{
-				Quaternion targetRotation = Quaternion.LookRotation(velocity.normalized);
+				Quaternion targetRotation = Quaternion.LookRotation(_steering.DesiredDirection);
 				transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
 			}
 
-			// Tính khoảng cách chiếu từ vị trí quái lên trục đường hướng tới mặt phẳng EndNode
-			Vector3 segmentDir = currentSegment.EndNode - currentSegment.StartNode;
-			float segmentLength = segmentDir.magnitude;
-			float distanceToTargetPlane = Vector3.Dot(currentSegment.EndNode - currentPos, segmentDir.normalized);
-
-			// Ngưỡng bẻ cua sớm: không vượt quá 20% chiều dài đoạn đường (chống skip hẳn các đoạn cua ngắn)
-			float earlySwitchThreshold = Mathf.Min(0.5f, segmentLength * 0.2f);
-
-			// Chuyển sang đoạn tiếp theo nếu tiến trình gần xong, HOẶC đã chạm ngưỡng bẻ cua
-			if (progress >= 0.98f || distanceToTargetPlane < earlySwitchThreshold)
+			// Chỉ tính toán nhảy Segment nếu không bị ghi đè mục tiêu
+			if (TargetOverride == null)
 			{
-				_currentSegmentIndex++;
+				// Tính khoảng cách chiếu từ vị trí quái lên trục đường hướng tới mặt phẳng EndNode
+				Vector3 segmentDir = currentSegment.EndNode - currentSegment.StartNode;
+				float segmentLength = segmentDir.magnitude;
+				float distanceToTargetPlane = Vector3.Dot(currentSegment.EndNode - currentPos, segmentDir.normalized);
+
+				// Ngưỡng bẻ cua sớm: không vượt quá 20% chiều dài đoạn đường (chống skip hẳn các đoạn cua ngắn)
+				float earlySwitchThreshold = Mathf.Min(0.5f, segmentLength * 0.2f);
+
+				// Chuyển sang đoạn tiếp theo nếu tiến trình gần xong, HOẶC đã chạm ngưỡng bẻ cua
+				if (progress >= 0.98f || distanceToTargetPlane < earlySwitchThreshold)
+				{
+					_currentSegmentIndex++;
+				}
 			}
 		}
 
@@ -145,6 +168,7 @@ namespace TowerDefense.Enemy
 		{
 			_isMoving = false;
 			_currentSegmentIndex = 0;
+			TargetOverride = null;
 			if (_animation != null) _animation.SetMoveSpeed(0f);
 		}
 

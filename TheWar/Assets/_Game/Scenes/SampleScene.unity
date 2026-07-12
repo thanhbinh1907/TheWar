@@ -10124,7 +10124,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.35355338, y: 0.35355338, z: -0.1464466, w: 0.8535535}
-  m_LocalPosition: {x: 0, y: 15, z: -10}
+  m_LocalPosition: {x: 9.18, y: 12.88, z: -13.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14451,7 +14451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096b1c799ed3eac41befb721d3d0efbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.PlacementManager
-  _selectedUnit: {fileID: 11400000, guid: 7bb6ca47f29f0a941a79765ef6ee9887, type: 2}
+  _selectedUnit: {fileID: 11400000, guid: 3220db69cf6665b4d8081201ca2ca645, type: 2}
 --- !u!1 &449584441
 GameObject:
   m_ObjectHideFlags: 0

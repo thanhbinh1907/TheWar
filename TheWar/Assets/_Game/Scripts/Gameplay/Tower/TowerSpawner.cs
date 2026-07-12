@@ -9,7 +9,7 @@ namespace TowerDefense.Gameplay.Tower
 	{
 		[SerializeField] private float _guardSpacing = 1.5f;
 		[SerializeField] private int _guardCount = 3;
-		[SerializeField] private float _spawnYOffset = 0.5f; // Chỉnh cao độ để tránh chui xuống đất
+		[SerializeField] private float _spawnYOffset = 0f; // Chỉnh cao độ bằng 0 để lính đứng chạm đất (chỉnh lại trong Inspector nếu cần)
 
 		private UnitData _currentData;
 		private List<GameObject> _activeGuards = new List<GameObject>();
@@ -19,9 +19,9 @@ namespace TowerDefense.Gameplay.Tower
 		public void Initialize(UnitData data)
 		{
 			_currentData = data;
-			if (_currentData.DeployPrefab == null)
+			if (_currentData.SpawnedGuardPrefab == null)
 			{
-				Debug.LogError($"[TowerSpawner] {_currentData.UnitName} has DeployMode.SocketSpawner but DeployPrefab is NULL!");
+				Debug.LogError($"[TowerSpawner] {_currentData.UnitName} has DeployMode.SocketSpawner but SpawnedGuardPrefab is NULL!");
 				return;
 			}
 
@@ -36,7 +36,7 @@ namespace TowerDefense.Gameplay.Tower
 				_guardPool = new ObjectPool<GameObject>(
 					createFunc: () =>
 					{
-						var go = Instantiate(_currentData.DeployPrefab);
+						var go = Instantiate(_currentData.SpawnedGuardPrefab);
 						go.SetActive(false);
 						return go;
 					},
@@ -120,7 +120,7 @@ namespace TowerDefense.Gameplay.Tower
 				var guardUnit = guard.GetComponent<GuardUnit>();
 				if (guardUnit != null)
 				{
-					guardUnit.Initialize(_currentData, this);
+					guardUnit.Initialize(_currentData, this, spawnPos);
 				}
 
 				_activeGuards.Add(guard);
@@ -135,7 +135,7 @@ namespace TowerDefense.Gameplay.Tower
 
 			foreach (var guard in _activeGuards)
 			{
-				if (guard.activeSelf)
+				if (guard != null && guard.activeSelf)
 				{
 					_guardPool.Release(guard);
 				}

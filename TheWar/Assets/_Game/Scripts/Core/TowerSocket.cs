@@ -16,19 +16,18 @@ namespace TowerDefense.Core
 			ActiveTowers.Clear();
 		}
 
+		[SerializeField] private Transform _unitSpawnPoint;
+
 		public bool IsOccupied { get; private set; }
 		public UnitData CurrentUnitData { get; private set; }
 		private MeshRenderer _meshRenderer;
 		private TowerHealth _health;
-		private TowerShooter _towerShooter;
-		private TowerSpawner _towerSpawner;
+		private GameObject _spawnedUnitInstance;
 
 		private void Awake()
 		{
 			_meshRenderer = GetComponent<MeshRenderer>();
 			_health = GetComponent<TowerHealth>();
-			_towerShooter = GetComponent<TowerShooter>();
-			_towerSpawner = GetComponent<TowerSpawner>();
 		}
 
 		private void Start()
@@ -122,13 +121,26 @@ namespace TowerDefense.Core
 			Debug.Log($"[Socket] Đã cắm thành công Lõi: {data.UnitName} vào chiếc tháp này!");
 #endif
 
-			if (data.DeployMode == DeployMode.SocketRanged && _towerShooter != null)
+			if (data.DeployMode == DeployMode.SocketRanged || data.DeployMode == DeployMode.SocketSpawner)
 			{
-				_towerShooter.Initialize(data);
-			}
-			else if (data.DeployMode == DeployMode.SocketSpawner && _towerSpawner != null)
-			{
-				_towerSpawner.Initialize(data);
+				if (data.DeployPrefab != null && _unitSpawnPoint != null)
+				{
+					// Tạo lính nhưng KHÔNG làm con của tháp để tránh bị giãn (Stretch) do Tháp bị Scale.
+					// Đặt lính làm con của transform.parent (ví dụ: thư mục Towers chứa các tháp)
+					_spawnedUnitInstance = Instantiate(data.DeployPrefab, _unitSpawnPoint.position, _unitSpawnPoint.rotation);
+					_spawnedUnitInstance.transform.SetParent(transform.parent, true);
+
+					var towerUnit = _spawnedUnitInstance.GetComponent<TowerUnit>();
+					
+					if (towerUnit != null)
+					{
+						towerUnit.Initialize(data);
+					}
+					else
+					{
+						Debug.LogWarning($"[TowerSocket] Prefab {data.DeployPrefab.name} is missing TowerUnit component!");
+					}
+				}
 			}
 
 			// Cắm xong thì xóa thẻ đang cầm trên tay đi
@@ -139,13 +151,10 @@ namespace TowerDefense.Core
 		{
 			if (CurrentUnitData != null)
 			{
-				if (CurrentUnitData.DeployMode == DeployMode.SocketRanged && _towerShooter != null)
+				if (_spawnedUnitInstance != null)
 				{
-					_towerShooter.StopShooting();
-				}
-				else if (CurrentUnitData.DeployMode == DeployMode.SocketSpawner && _towerSpawner != null)
-				{
-					_towerSpawner.DespawnGuards();
+					Destroy(_spawnedUnitInstance);
+					_spawnedUnitInstance = null;
 				}
 			}
 

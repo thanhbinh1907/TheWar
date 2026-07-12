@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TowerDefense.Core;
 using TowerDefense.Gameplay.Combat;
@@ -9,10 +10,13 @@ namespace TowerDefense.Gameplay.Tower
     public class TowerShooter : MonoBehaviour
     {
         [SerializeField] private Transform _firePoint;
+        [SerializeField] private float _rotationSpeed = 15f;
         
         private TowerDetector _detector;
         private UnitData _currentData;
         private Coroutine _shootingCoroutine;
+
+        public event Action OnShoot;
 
         private void Awake()
         {
@@ -50,13 +54,28 @@ namespace TowerDefense.Gameplay.Tower
             _currentData = null;
         }
 
+        private void Update()
+        {
+            if (_detector != null && _detector.CurrentTarget != null)
+            {
+                Vector3 direction = _detector.CurrentTarget.position - transform.position;
+                direction.y = 0; // Giữ cho lính không bị ngẩng lên/cúi xuống
+
+                if (direction.sqrMagnitude > 0.001f)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+                }
+            }
+        }
+
         private IEnumerator ShootingRoutine()
         {
             while (true)
             {
                 if (_currentData != null && _detector.CurrentTarget != null)
                 {
-                    Shoot(_detector.CurrentTarget);
+                    RequestAttack();
                     
                     // Wait based on attack speed (attacks per second)
                     float fireInterval = 1f / Mathf.Max(_currentData.AttackSpeed, 0.1f);
@@ -70,8 +89,15 @@ namespace TowerDefense.Gameplay.Tower
             }
         }
 
-        private void Shoot(Transform target)
+        public void RequestAttack()
         {
+            OnShoot?.Invoke();
+        }
+
+        public void SpawnProjectile()
+        {
+            if (_detector == null || _detector.CurrentTarget == null) return;
+
             if (_currentData.ProjectilePrefab != null && ProjectilePool.Instance != null)
             {
                 Projectile proj = ProjectilePool.Instance.Get(
@@ -82,7 +108,7 @@ namespace TowerDefense.Gameplay.Tower
                 
                 if (proj != null)
                 {
-                    proj.Launch(target, _currentData.Damage);
+                    proj.Launch(_detector.CurrentTarget, _currentData.Damage);
                 }
             }
             else
