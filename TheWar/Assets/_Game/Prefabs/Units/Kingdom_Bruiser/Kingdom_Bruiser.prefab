@@ -1708,6 +1708,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 542e342c329808c42a0e76a51a755304, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.GuardMovement
+  _separationRadius: 0.3
+  _separationWeight: 0.5
 --- !u!1 &7349893377072768747
 GameObject:
   m_ObjectHideFlags: 0

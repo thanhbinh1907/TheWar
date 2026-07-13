@@ -22,6 +22,7 @@ namespace TowerDefense.Gameplay.Tower
 		public bool IsOccupied => _occupyingEnemy != null;
 		public GameObject OccupyingEnemy => _occupyingEnemy;
 		
+		public TowerSpawner Spawner => _spawner;
 		public Vector3 SpawnPoint { get; private set; }
 
 		public void Initialize(UnitData data, TowerSpawner spawner, Vector3 spawnPoint)
