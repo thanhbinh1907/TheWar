@@ -14451,7 +14451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 096b1c799ed3eac41befb721d3d0efbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.PlacementManager
-  _selectedUnit: {fileID: 11400000, guid: 3220db69cf6665b4d8081201ca2ca645, type: 2}
+  _selectedUnit: {fileID: 11400000, guid: 7bb6ca47f29f0a941a79765ef6ee9887, type: 2}
 --- !u!1 &449584441
 GameObject:
   m_ObjectHideFlags: 0

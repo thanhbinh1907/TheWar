@@ -20,8 +20,10 @@ MonoBehaviour:
   _damage: 25
   _attackRange: 20
   _attackSpeed: 1
-  _projectilePrefab: {fileID: 1806739048747957755, guid: 24d0e47b6f33e664cb0e20e0dc0cfd70, type: 3}
+  _moveSpeed: 2.5
+  _projectilePrefab: {fileID: 6632641634017952411, guid: 5449c6394ec1044428ee7ac77d6c6fba, type: 3}
   _deployPrefab: {fileID: 2811282344208136691, guid: 156fdd80cc418cc46ab675f23f496fc8, type: 3}
+  _spawnedGuardPrefab: {fileID: 0}
   _unitColor: {r: 0.49387893, g: 0.13950694, b: 0.5188679, a: 1}
   _idleClip: {fileID: 7400000, guid: be797334aa848784d838447aa3d3a0e4, type: 3}
   _runClip: {fileID: 0}

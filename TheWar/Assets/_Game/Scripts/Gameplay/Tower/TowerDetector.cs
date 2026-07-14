@@ -1,15 +1,18 @@
 using System.Collections;
 using UnityEngine;
+using TowerDefense.Gameplay.Combat;
 
 namespace TowerDefense.Gameplay.Tower
 {
-    public class TowerDetector : MonoBehaviour
+    public class TowerDetector : MonoBehaviour, ITargetDetector
     {
         private float _attackRange;
         private Coroutine _detectionCoroutine;
         private int _enemyLayerMask;
 
         public Transform CurrentTarget { get; private set; }
+        
+        public bool HasValidTarget => CurrentTarget != null && CurrentTarget.gameObject.activeInHierarchy;
 
         private void Awake()
         {
@@ -47,12 +50,12 @@ namespace TowerDefense.Gameplay.Tower
             var wait = new WaitForSeconds(0.1f);
             while (true)
             {
-                FindClosestEnemy();
+                ForceFindTarget();
                 yield return wait;
             }
         }
 
-        private void FindClosestEnemy()
+        public void ForceFindTarget()
         {
             // Only search if we don't have a valid target or the current target is dead/out of range
             if (CurrentTarget != null)

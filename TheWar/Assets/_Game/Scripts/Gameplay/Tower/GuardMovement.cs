@@ -12,12 +12,14 @@ namespace TowerDefense.Gameplay.Tower
         [SerializeField] private float _separationWeight = 1.5f;
 
         [Header("Patrol Settings")]
-        [SerializeField] private float _maxPatrolRange = 3f;
+        [SerializeField] private float _fallbackPatrolRange = 3f;
+
+        private float MaxPatrolRange => (_guard != null && _guard.Spawner != null) ? _guard.Spawner.RallyRadius : _fallbackPatrolRange;
 
         private GuardUnit _guard;
         private GuardDetector _detector;
         private TowerUnitAnimation _animation;
-        private GuardCombat _combat;
+        private TowerDefense.Gameplay.Combat.UnitController _combat;
         private UnitData _data;
         public void Initialize(UnitData data)
         {
@@ -25,7 +27,7 @@ namespace TowerDefense.Gameplay.Tower
             _guard = GetComponent<GuardUnit>();
             _detector = GetComponent<GuardDetector>();
             _animation = GetComponent<TowerUnitAnimation>();
-            _combat = GetComponent<GuardCombat>();
+            _combat = GetComponent<TowerDefense.Gameplay.Combat.UnitController>();
         }
 
         private void Update()
@@ -49,11 +51,12 @@ namespace TowerDefense.Gameplay.Tower
 
             float distToTarget = Vector3.Distance(transform.position, targetPos);
             
-            // Tính toán khoảng cách dừng sao cho luôn lọt vào trong tầm đánh của GuardCombat
+            // Tính toán khoảng cách dừng: đi vào sâu hơn trong tầm đánh để nhìn cận chiến chân thực hơn
             float stopDist = 0.1f;
             if (isMovingToEnemy)
             {
-                stopDist = _combat != null ? Mathf.Max(0.1f, _combat.AttackRange - 0.1f) : 1.3f;
+                // Dừng ở cự ly 0.8 hoặc sát hơn, miễn là nhỏ hơn tầm đánh
+                stopDist = _combat != null ? Mathf.Clamp(_combat.AttackRange * 0.6f, 0.1f, 0.9f) : 0.8f;
             }
 
             if (distToTarget > stopDist)
@@ -97,13 +100,13 @@ namespace TowerDefense.Gameplay.Tower
                 bool isClamped = false;
                 if (_guard.Spawner != null)
                 {
-                    Vector3 towerPos = _guard.Spawner.transform.position;
-                    Vector3 towerPos2D = new Vector3(towerPos.x, 0f, towerPos.z);
+                    Vector3 centerPos = _guard.SpawnPoint;
+                    Vector3 centerPos2D = new Vector3(centerPos.x, 0f, centerPos.z);
                     
                     Vector3 nextPos = transform.position + dir * (_data.MoveSpeed * Time.deltaTime);
                     Vector3 nextPos2D = new Vector3(nextPos.x, 0f, nextPos.z);
                     
-                    if (Vector3.Distance(towerPos2D, nextPos2D) > _maxPatrolRange)
+                    if (Vector3.Distance(centerPos2D, nextPos2D) > MaxPatrolRange)
                     {
                         isClamped = true;
                     }
@@ -148,10 +151,11 @@ namespace TowerDefense.Gameplay.Tower
 
             // Gizmo cho giới hạn di chuyển (Max Patrol Range)
             var guard = GetComponent<GuardUnit>();
-            if (guard != null && guard.Spawner != null && Application.isPlaying)
+            if (guard != null && Application.isPlaying)
             {
+                float range = (guard.Spawner != null) ? guard.Spawner.RallyRadius : _fallbackPatrolRange;
                 Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(guard.Spawner.transform.position, _maxPatrolRange);
+                Gizmos.DrawWireSphere(guard.SpawnPoint, range);
             }
         }
     }

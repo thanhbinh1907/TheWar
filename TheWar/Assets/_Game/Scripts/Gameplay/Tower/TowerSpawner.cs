@@ -10,6 +10,9 @@ namespace TowerDefense.Gameplay.Tower
 		[SerializeField] private float _guardSpacing = 1.5f;
 		[SerializeField] private int _guardCount = 3;
 		[SerializeField] private float _spawnYOffset = 0f; // Chỉnh cao độ bằng 0 để lính đứng chạm đất (chỉnh lại trong Inspector nếu cần)
+		[SerializeField] private float _rallyRadius = 3f; // Bán kính hoạt động quanh cờ
+
+		public float RallyRadius => _rallyRadius;
 
 		private UnitData _currentData;
 		private List<GameObject> _activeGuards = new List<GameObject>();

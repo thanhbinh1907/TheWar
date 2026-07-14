@@ -11,18 +11,18 @@ namespace TowerDefense.Gameplay.Tower
     public class TowerUnit : MonoBehaviour
     {
         private UnitData _data;
-        private TowerShooter _shooter;
         private TowerSpawner _spawner;
         private TowerUnitAnimation _animation;
+        private TowerDetector _detector;
 
         public void Initialize(UnitData data)
         {
             _data = data;
             
             // Lấy các component (nếu có) trên chính prefab của Lính
-            _shooter = GetComponent<TowerShooter>();
             _spawner = GetComponent<TowerSpawner>();
             _animation = GetComponent<TowerUnitAnimation>();
+            _detector = GetComponent<TowerDetector>();
 
             // Bơm data vào Animation
             if (_animation != null)
@@ -31,16 +31,37 @@ namespace TowerDefense.Gameplay.Tower
                 _animation.SetAttackSpeed(data.AttackSpeed);
             }
 
-            // Bơm data vào Shooter và nối Event
-            if (_shooter != null)
+            // Khởi tạo Detector
+            if (_detector != null)
             {
-                _shooter.Initialize(data);
-                
-                if (_animation != null)
-                {
-                    _shooter.OnShoot += _animation.TriggerAttackAnimation;
-                    _animation.OnHitEvent += _shooter.SpawnProjectile;
-                }
+                _detector.Initialize(data.AttackRange);
+            }
+
+            // Khởi tạo Combat (dùng UnitController thay vì TowerShooter)
+            var unitController = GetComponent<TowerDefense.Gameplay.Combat.UnitController>();
+            if (unitController != null)
+            {
+                unitController.SetAttackRange(data.AttackRange);
+                unitController.SetAttackSpeed(data.AttackSpeed);
+            }
+
+            var simpleAttack = GetComponent<TowerDefense.Gameplay.Combat.SimpleAttack>();
+            if (simpleAttack != null)
+            {
+                simpleAttack.SetDamage(data.Damage);
+            }
+            
+            var chargedAttack = GetComponent<TowerDefense.Gameplay.Combat.ChargedAttack>();
+            if (chargedAttack != null)
+            {
+                // Giả sử lấy damage từ UnitData, cho min=half, max=full
+                chargedAttack.SetDamageRange(data.Damage * 0.5f, data.Damage);
+            }
+
+            var simpleRanged = GetComponent<TowerDefense.Gameplay.Combat.SimpleRangedAttack>();
+            if (simpleRanged != null)
+            {
+                simpleRanged.SetDamage(data.Damage);
             }
 
             // Bơm data vào Spawner (dùng cho nhà lính)
@@ -52,15 +73,10 @@ namespace TowerDefense.Gameplay.Tower
 
         private void OnDestroy()
         {
-            // Dọn dẹp event và tắt súng
-            if (_shooter != null)
+            // Dừng Detector
+            if (_detector != null)
             {
-                if (_animation != null)
-                {
-                    _shooter.OnShoot -= _animation.TriggerAttackAnimation;
-                    _animation.OnHitEvent -= _shooter.SpawnProjectile;
-                }
-                _shooter.StopShooting();
+                _detector.StopDetecting();
             }
 
             // Dọn dẹp lính chặn đường nếu bị tiêu diệt

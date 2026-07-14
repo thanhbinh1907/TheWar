@@ -1,16 +1,18 @@
 using System.Collections;
 using TowerDefense.Core;
+using TowerDefense.Gameplay.Combat;
 using UnityEngine;
 
 namespace TowerDefense.Gameplay.Tower
 {
-    public class GuardDetector : MonoBehaviour
+    public class GuardDetector : MonoBehaviour, ITargetDetector
     {
         [SerializeField] private float _detectRange = 5f;
         [SerializeField] private LayerMask _enemyLayerMask;
         private Coroutine _detectionCoroutine;
         
         public Transform CurrentTarget { get; private set; }
+        public bool HasValidTarget => CurrentTarget != null && CurrentTarget.gameObject.activeInHierarchy;
 
         private void Awake()
         {

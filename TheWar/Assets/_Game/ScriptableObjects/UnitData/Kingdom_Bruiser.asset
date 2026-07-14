@@ -18,8 +18,9 @@ MonoBehaviour:
   _deployMode: 1
   _maxHealth: 10000
   _damage: 10
-  _attackRange: 5
+  _attackRange: 1.5
   _attackSpeed: 1
+  _moveSpeed: 2.5
   _projectilePrefab: {fileID: 0}
   _deployPrefab: {fileID: 4917401744698594733, guid: b54781e16bbd4954b8b43f7676c4b591, type: 3}
   _spawnedGuardPrefab: {fileID: 6818111465738059337, guid: 458cab42074bc524ba2e8e344cbeaecb, type: 3}

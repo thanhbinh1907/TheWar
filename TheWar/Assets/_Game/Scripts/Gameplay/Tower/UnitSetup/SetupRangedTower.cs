@@ -7,7 +7,9 @@ namespace TowerDefense.Gameplay.Tower.UnitSetup
     /// Nó sẽ tự động gắn tất cả các Script cần thiết như TowerUnit, TowerShooter, TowerDetector, TowerUnitAnimation.
     /// </summary>
     [RequireComponent(typeof(TowerUnit))]
-    [RequireComponent(typeof(TowerShooter))] // TowerShooter sẽ tự động kéo theo TowerDetector
+    [RequireComponent(typeof(TowerDetector))]
+    [RequireComponent(typeof(TowerDefense.Gameplay.Combat.UnitController))]
+    [RequireComponent(typeof(TowerDefense.Gameplay.Combat.ChargedAttack))]
     [RequireComponent(typeof(TowerDefense.Tower.TowerUnitAnimation))]
     [RequireComponent(typeof(Animator))]
     public class SetupRangedTower : MonoBehaviour

@@ -7,7 +7,8 @@ namespace TowerDefense.Gameplay.Tower.UnitSetup
     /// Nó sẽ tự động gắn GuardUnit, TowerUnitAnimation, Animator và Collider.
     /// </summary>
     [RequireComponent(typeof(GuardUnit))]
-    [RequireComponent(typeof(GuardCombat))]
+    [RequireComponent(typeof(TowerDefense.Gameplay.Combat.UnitController))]
+    [RequireComponent(typeof(TowerDefense.Gameplay.Combat.SimpleAttack))]
     [RequireComponent(typeof(GuardDetector))]
     [RequireComponent(typeof(GuardMovement))]
     [RequireComponent(typeof(TowerDefense.Tower.TowerUnitAnimation))]

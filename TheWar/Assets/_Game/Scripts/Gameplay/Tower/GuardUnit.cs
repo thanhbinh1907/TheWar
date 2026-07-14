@@ -48,27 +48,31 @@ namespace TowerDefense.Gameplay.Tower
 			var movement = GetComponent<GuardMovement>();
 			if (movement != null) movement.Initialize(data);
 
-			// Khởi tạo Combat và nối Event Animation
-			var combat = GetComponent<GuardCombat>();
-			if (combat != null)
+			// Khởi tạo Combat (dùng UnitController thay vì GuardCombat)
+			var unitController = GetComponent<TowerDefense.Gameplay.Combat.UnitController>();
+			if (unitController != null)
 			{
-				combat.Initialize(data);
-				if (_animation != null)
-				{
-					combat.OnAttack += _animation.TriggerAttackAnimation;
-					combat.OnStopAttack += _animation.StopAttackAnimation;
-				}
+				unitController.SetAttackRange(data.AttackRange);
+				unitController.SetAttackSpeed(data.AttackSpeed);
+			}
+
+			// Khởi tạo sát thương cho IAttackBehaviour
+			var simpleAttack = GetComponent<TowerDefense.Gameplay.Combat.SimpleAttack>();
+			if (simpleAttack != null)
+			{
+				simpleAttack.SetDamage(data.Damage);
+			}
+			
+			var chargedAttack = GetComponent<TowerDefense.Gameplay.Combat.ChargedAttack>();
+			if (chargedAttack != null)
+			{
+				// Giả sử lấy damage từ UnitData, cho min=half, max=full
+				chargedAttack.SetDamageRange(data.Damage * 0.5f, data.Damage);
 			}
 		}
 
 		private void OnDestroy()
 		{
-			var combat = GetComponent<GuardCombat>();
-			if (combat != null && _animation != null)
-			{
-				combat.OnAttack -= _animation.TriggerAttackAnimation;
-				combat.OnStopAttack -= _animation.StopAttackAnimation;
-			}
 		}
 
 		public bool TryOccupy(GameObject enemy)

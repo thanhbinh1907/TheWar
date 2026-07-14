@@ -1558,9 +1558,10 @@ GameObject:
   - component: {fileID: 8731495732601398875}
   - component: {fileID: 7295037064406408621}
   - component: {fileID: 1746026851630672244}
-  - component: {fileID: 2655952454788379633}
   - component: {fileID: 7409261072998382623}
+  - component: {fileID: 5587442356943428610}
   - component: {fileID: 1135679874669117890}
+  - component: {fileID: 9179288385224988953}
   m_Layer: 10
   m_Name: Kingdom_Bruiser
   m_TagString: Untagged
@@ -1667,19 +1668,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7abe06528e61df84aab559757130cfbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.UnitSetup.SetupGuardUnit
---- !u!114 &2655952454788379633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6818111465738059337}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61962871757b10a40a9aaeb5d2a5d8bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.GuardCombat
-  _attackRange: 1
 --- !u!114 &7409261072998382623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1696,6 +1684,21 @@ MonoBehaviour:
   _enemyLayerMask:
     serializedVersion: 2
     m_Bits: 512
+--- !u!114 &5587442356943428610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6818111465738059337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce62ffca8b78da44bb4e1e33f40af851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Combat.UnitController
+  _attackRange: 1.5
+  _rotationSpeed: 15
+  _rotateTowardsTarget: 1
 --- !u!114 &1135679874669117890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1710,6 +1713,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Tower.GuardMovement
   _separationRadius: 0.3
   _separationWeight: 0.5
+  _maxPatrolRange: 3
+--- !u!114 &9179288385224988953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6818111465738059337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2526e492161826b4492751c474ff9543, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Gameplay.Combat.SimpleAttack
+  _animator: {fileID: 1895015229617873081}
+  _damage: 0
 --- !u!1 &7349893377072768747
 GameObject:
   m_ObjectHideFlags: 0
