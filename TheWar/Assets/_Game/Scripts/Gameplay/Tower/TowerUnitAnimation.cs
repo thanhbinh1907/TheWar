@@ -54,8 +54,17 @@ namespace TowerDefense.Tower
             // Map the raw clips to the base states by their original clip names
             _overrideController["Base_Idle"] = _unitData.IdleClip;
             _overrideController["Base_Run"] = _unitData.RunClip;
+            
+            // Map Base_Attack (dùng chung cho Kéo Cung hoặc Chém thường)
             _overrideController["Base_Attack"] = _unitData.AttackClip;
-            _overrideController["Base_Victory"] = _unitData.VictoryClip;
+            
+            // Map Base_Hold và Base_Release nếu unit có đòn tấn công gồng (ví dụ: Archer)
+            if (_unitData.HoldClip != null)
+                _overrideController["Base_Hold"] = _unitData.HoldClip;
+            if (_unitData.ReleaseClip != null)
+                _overrideController["Base_Release"] = _unitData.ReleaseClip;
+            if (_unitData.ReloadClip != null)
+                _overrideController["Base_Reload"] = _unitData.ReloadClip;
 
             _animator.runtimeAnimatorController = _overrideController;
         }

@@ -8,17 +8,15 @@ namespace TowerDefense.Gameplay.Combat
     public class ChargedAttack : MonoBehaviour, IAttackBehaviour
     {
         [SerializeField] private Animator _animator;
-        [SerializeField] private float _minHoldTime = 0.3f;
-        [SerializeField] private float _maxHoldTime = 1.5f;
-        [SerializeField] private float _minDamage = 10f;
-        [SerializeField] private float _maxDamage = 30f;
-        [SerializeField] private Projectile _projectilePrefab;
         [SerializeField] private Transform _firePoint;
+
+        private float _damage;
+        private Projectile _projectilePrefab;
 
         private static readonly int AttackPhaseHash = Animator.StringToHash("AttackPhase");
 
-        private float _holdStartTime;
         private Transform _currentTarget;
+        private BowStringController _bowStringController;
         
         public bool IsAttacking { get; private set; }
 
@@ -32,6 +30,8 @@ namespace TowerDefense.Gameplay.Combat
             {
                 _firePoint = transform;
             }
+            
+            _bowStringController = GetComponent<BowStringController>();
         }
 
         public void StartAttack(Transform target)
@@ -41,13 +41,19 @@ namespace TowerDefense.Gameplay.Combat
             IsAttacking = true;
             _currentTarget = target;
             _animator.SetInteger(AttackPhaseHash, 1); // Windup phase
+            
+            // Đảm bảo mũi tên giả luôn hiện ra khi bắt đầu một chu kỳ tấn công mới
+            // (Đề phòng trường hợp lần bắn trước bị hủy ngang lúc chưa kịp Reload)
+            if (_bowStringController != null)
+            {
+                _bowStringController.ShowArrow();
+            }
         }
 
         // Gọi từ Animation Event ở cuối clip Windup
         public void OnWindupFinishedEvent()
         {
-            _holdStartTime = Time.time;
-            _animator.SetInteger(AttackPhaseHash, 2); // Hold phase, loop chờ
+            _animator.SetInteger(AttackPhaseHash, 2); // Hold phase, loop chờ hoặc chuyển tiếp dựa vào Animator
         }
 
         // Gọi mỗi frame từ UnitController khi đang ở phase Hold
@@ -56,25 +62,36 @@ namespace TowerDefense.Gameplay.Combat
             if (!IsAttacking) return;
             
             bool targetLost = _currentTarget == null || !_currentTarget.gameObject.activeInHierarchy;
-            bool maxHoldReached = Time.time - _holdStartTime >= _maxHoldTime;
 
-            if (targetLost || maxHoldReached)
+            if (targetLost)
             {
-                Release();
+                CancelAttack();
             }
         }
 
-        private void Release()
+        //        // Gọi từ Animation Event ở cuối clip Hold (Tùy chọn)
+        public void OnHoldFinishedEvent()
         {
             _animator.SetInteger(AttackPhaseHash, 3); // Release phase
+        }
+
+        // Gọi từ Animation Event ở cuối clip Release (nếu có Reload)
+        public void OnReleaseFinishedEvent()
+        {
+            _animator.SetInteger(AttackPhaseHash, 4); // Reload phase
+        }
+
+        // Gọi từ Animation Event ở cuối cùng (sau Release hoặc Reload)
+        public void OnAttackFinishedEvent()
+        {
+            IsAttacking = false;
+            _currentTarget = null;
+            _animator.SetInteger(AttackPhaseHash, 0);
         }
 
         // Gọi từ Animation Event đúng frame bắn mũi tên (ví dụ: Hit)
         public void Hit()
         {
-            float chargeRatio = Mathf.Clamp01((Time.time - _holdStartTime) / _maxHoldTime);
-            float finalDamage = Mathf.Lerp(_minDamage, _maxDamage, chargeRatio);
-
             if (_currentTarget != null && _projectilePrefab != null && ProjectilePool.Instance != null)
             {
                 Projectile proj = ProjectilePool.Instance.Get(
@@ -85,30 +102,33 @@ namespace TowerDefense.Gameplay.Combat
                 
                 if (proj != null)
                 {
-                    proj.Launch(_currentTarget, finalDamage);
+                    proj.Launch(_currentTarget, _damage);
                 }
             }
         }
 
-        // Gọi từ Animation Event ở cuối clip Release
-        public void OnAttackFinishedEvent()
-        {
-            IsAttacking = false;
-            _currentTarget = null;
-            _animator.SetInteger(AttackPhaseHash, 0);
-        }
+
 
         public void CancelAttack()
         {
             IsAttacking = false;
             _currentTarget = null;
             _animator.SetInteger(AttackPhaseHash, 0);
+
+            if (_bowStringController != null)
+            {
+                _bowStringController.ReleaseString();
+                // Không HideArrow ở đây nữa, giữ mũi tên trên tay để dùng bắn con tiếp theo
+            }
         }
 
-        public void SetDamageRange(float minDamage, float maxDamage)
+        public void Initialize(float damage, GameObject projectilePrefab)
         {
-            _minDamage = minDamage;
-            _maxDamage = maxDamage;
+            _damage = damage;
+            if (projectilePrefab != null)
+            {
+                _projectilePrefab = projectilePrefab.GetComponent<Projectile>();
+            }
         }
     }
 }

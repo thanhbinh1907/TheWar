@@ -66,8 +66,7 @@ namespace TowerDefense.Gameplay.Tower
 			var chargedAttack = GetComponent<TowerDefense.Gameplay.Combat.ChargedAttack>();
 			if (chargedAttack != null)
 			{
-				// Giả sử lấy damage từ UnitData, cho min=half, max=full
-				chargedAttack.SetDamageRange(data.Damage * 0.5f, data.Damage);
+				chargedAttack.Initialize(data.Damage, data.ProjectilePrefab);
 			}
 		}
 

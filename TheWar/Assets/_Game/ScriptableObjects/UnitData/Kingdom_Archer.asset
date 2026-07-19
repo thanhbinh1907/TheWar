@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c10416cdd3764dc4fba48aaaf91a746d, type: 3}
+  m_Name: Kingdom_Archer
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Core.UnitData
+  _unitName: Mage
+  _unitClass: 1
+  _faction: 0
+  _deployMode: 0
+  _attackType: 1
+  _maxHealth: 100
+  _damage: 25
+  _attackRange: 20
+  _attackSpeed: 2
+  _moveSpeed: 2.5
+  _projectilePrefab: {fileID: 1248255688537458, guid: 4747eb87cb4d01b438c8bb2330fc8965, type: 3}
+  _deployPrefab: {fileID: 8030011407627000831, guid: 1b7be9465d9b6484a8e756a2e645e4dc, type: 3}
+  _spawnedGuardPrefab: {fileID: 0}
+  _unitColor: {r: 0.14117646, g: 0.2767764, b: 0.5176471, a: 1}
+  _idleClip: {fileID: 7400000, guid: be797334aa848784d838447aa3d3a0e4, type: 3}
+  _runClip: {fileID: 0}
+  _attackClip: {fileID: 8827267189422676723, guid: 2e32c2d29d100924eaa21b1aff59b350, type: 3}
+  _holdClip: {fileID: 9179782846125406184, guid: 1a7b0598a7ed3044289a129ee5e27d3a, type: 3}
+  _releaseClip: {fileID: 81301949618695063, guid: 1bf5a1cd4fa918a4d9b257349cae39af, type: 3}
+  _reloadClip: {fileID: 3094330708855449807, guid: 5a5f9d6cdc3694d469a3016212f13b1f, type: 3}

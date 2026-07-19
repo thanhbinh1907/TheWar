@@ -16,6 +16,7 @@ MonoBehaviour:
   _unitClass: 2
   _faction: 0
   _deployMode: 0
+  _attackType: 0
   _maxHealth: 100
   _damage: 25
   _attackRange: 20
@@ -28,4 +29,5 @@ MonoBehaviour:
   _idleClip: {fileID: 7400000, guid: be797334aa848784d838447aa3d3a0e4, type: 3}
   _runClip: {fileID: 0}
   _attackClip: {fileID: 7400000, guid: ecf1c9844e13bbe48a8729667efdc143, type: 3}
-  _victoryClip: {fileID: 0}
+  _holdClip: {fileID: 0}
+  _releaseClip: {fileID: 0}

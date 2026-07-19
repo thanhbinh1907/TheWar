@@ -5,6 +5,7 @@ namespace TowerDefense.Core
 	public enum UnitClass { Bruiser, Ranger, Mage, Assassin, Artillery }
 	public enum FactionVoundDat { Kingdom, Adventure, Pirate, Samurai, Dungeons }
 	public enum DeployMode { SocketRanged, SocketSpawner, FreeDeploy }
+	public enum AttackType { Simple, Charged }
 
 	[CreateAssetMenu(fileName = "NewUnitData", menuName = "TowerDefense/Unit Data")]
 	public class UnitData : ScriptableObject
@@ -13,6 +14,7 @@ namespace TowerDefense.Core
 		[SerializeField] private UnitClass _unitClass;
 		[SerializeField] private FactionVoundDat _faction;
 		[SerializeField] private DeployMode _deployMode;
+		[SerializeField] private AttackType _attackType;
 
 		[Header("Combat Stats")]
 		[SerializeField] private float _maxHealth = 100f;
@@ -31,13 +33,16 @@ namespace TowerDefense.Core
 		[SerializeField] private AnimationClip _idleClip;
 		[SerializeField] private AnimationClip _runClip;
 		[SerializeField] private AnimationClip _attackClip;
-		[SerializeField] private AnimationClip _victoryClip;
+		[SerializeField] private AnimationClip _holdClip; // Dành cho các unit có đòn tấn công gồng (Archer)
+		[SerializeField] private AnimationClip _releaseClip; // Dành cho các unit có đòn tấn công gồng (Archer)
+		[SerializeField] private AnimationClip _reloadClip; // Nạp lại mũi tên sau khi bắn
 
 		// Public properties for encapsulation
 		public string UnitName => _unitName;
 		public UnitClass UnitClass => _unitClass;
 		public FactionVoundDat Faction => _faction;
 		public DeployMode DeployMode => _deployMode;
+		public AttackType AttackType => _attackType;
 		public float MaxHealth => _maxHealth;
 		public float Damage => _damage;
 		public float AttackRange => _attackRange;
@@ -51,6 +56,8 @@ namespace TowerDefense.Core
 		public AnimationClip IdleClip => _idleClip;
 		public AnimationClip RunClip => _runClip;
 		public AnimationClip AttackClip => _attackClip;
-		public AnimationClip VictoryClip => _victoryClip;
+		public AnimationClip HoldClip => _holdClip;
+		public AnimationClip ReleaseClip => _releaseClip;
+		public AnimationClip ReloadClip => _reloadClip;
 	}
 }

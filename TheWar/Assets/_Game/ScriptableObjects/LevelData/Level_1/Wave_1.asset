@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Wave.WaveDataSO
   waveName: 'Only Goblin '
   enemies:
+  - enemyData: {fileID: 11400000, guid: 4abd3655d472273479964d548943bb79, type: 2}
+    count: 2
+    spawnInterval: 0.2
+    delayBefore: 0.2
   - enemyData: {fileID: 11400000, guid: 0a496be2c73447745b4e4c42d9ad00c4, type: 2}
     count: 2
     spawnInterval: 0.2

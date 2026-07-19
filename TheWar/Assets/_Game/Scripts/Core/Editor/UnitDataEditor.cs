@@ -11,6 +11,7 @@ namespace TowerDefense.EditorScripts
         private SerializedProperty _unitClass;
         private SerializedProperty _faction;
         private SerializedProperty _deployMode;
+        private SerializedProperty _attackType;
 
         private SerializedProperty _maxHealth;
         private SerializedProperty _damage;
@@ -21,13 +22,14 @@ namespace TowerDefense.EditorScripts
         private SerializedProperty _projectilePrefab;
         private SerializedProperty _deployPrefab;
         private SerializedProperty _spawnedGuardPrefab;
-
         private SerializedProperty _unitColor;
 
         private SerializedProperty _idleClip;
         private SerializedProperty _runClip;
         private SerializedProperty _attackClip;
-        private SerializedProperty _victoryClip;
+        private SerializedProperty _holdClip;
+        private SerializedProperty _releaseClip;
+        private SerializedProperty _reloadClip;
 
         private void OnEnable()
         {
@@ -35,6 +37,7 @@ namespace TowerDefense.EditorScripts
             _unitClass = serializedObject.FindProperty("_unitClass");
             _faction = serializedObject.FindProperty("_faction");
             _deployMode = serializedObject.FindProperty("_deployMode");
+            _attackType = serializedObject.FindProperty("_attackType");
 
             _maxHealth = serializedObject.FindProperty("_maxHealth");
             _damage = serializedObject.FindProperty("_damage");
@@ -45,13 +48,15 @@ namespace TowerDefense.EditorScripts
             _projectilePrefab = serializedObject.FindProperty("_projectilePrefab");
             _deployPrefab = serializedObject.FindProperty("_deployPrefab");
             _spawnedGuardPrefab = serializedObject.FindProperty("_spawnedGuardPrefab");
-
+            
             _unitColor = serializedObject.FindProperty("_unitColor");
 
             _idleClip = serializedObject.FindProperty("_idleClip");
             _runClip = serializedObject.FindProperty("_runClip");
             _attackClip = serializedObject.FindProperty("_attackClip");
-            _victoryClip = serializedObject.FindProperty("_victoryClip");
+            _holdClip = serializedObject.FindProperty("_holdClip");
+            _releaseClip = serializedObject.FindProperty("_releaseClip");
+            _reloadClip = serializedObject.FindProperty("_reloadClip");
         }
 
         public override void OnInspectorGUI()
@@ -76,6 +81,7 @@ namespace TowerDefense.EditorScripts
             
             if (currentMode == DeployMode.SocketRanged)
             {
+                EditorGUILayout.PropertyField(_attackType);
                 EditorGUILayout.PropertyField(_projectilePrefab);
             }
             
@@ -93,10 +99,25 @@ namespace TowerDefense.EditorScripts
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Animations", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_idleClip);
-            EditorGUILayout.PropertyField(_runClip);
-            EditorGUILayout.PropertyField(_attackClip);
-            EditorGUILayout.PropertyField(_victoryClip);
-
+            
+            // Ẩn Run Clip nếu là tháp đứng yên (SocketRanged)
+            if (currentMode != DeployMode.SocketRanged)
+            {
+                EditorGUILayout.PropertyField(_runClip);
+            }
+            
+            if (currentMode == DeployMode.SocketRanged && _attackType.enumValueIndex == (int)AttackType.Charged)
+            {
+                EditorGUILayout.PropertyField(_attackClip, new GUIContent("Load Clip"));
+                EditorGUILayout.PropertyField(_holdClip);
+                EditorGUILayout.PropertyField(_releaseClip);
+                EditorGUILayout.PropertyField(_reloadClip);
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(_attackClip);
+            }
+            
             serializedObject.ApplyModifiedProperties();
         }
     }

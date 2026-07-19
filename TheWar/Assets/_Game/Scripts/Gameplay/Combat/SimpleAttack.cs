@@ -30,8 +30,8 @@ namespace TowerDefense.Gameplay.Combat
             IsAttacking = true;
             _currentTarget = target;
             
-            // Release ngay, không cần windup/hold đối với SimpleAttack
-            _animator.SetInteger(AttackPhaseHash, 3); 
+            // Kích hoạt phase 1 để Animator chạy Base_Attack
+            _animator.SetInteger(AttackPhaseHash, 1); 
         }
 
         public void CancelAttack()

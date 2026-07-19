@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Goblin_Male
   m_EditorClassIdentifier: Assembly-CSharp::TowerDefense.Enemy.EnemyDataSO
   _maxHealth: 5000
-  _moveSpeed: 2
+  _moveSpeed: 5
   _goldReward: 10
   _damageToBase: 1
   _enemyPrefab: {fileID: 5900752905321854006, guid: 108ab5885d7457844b58f9dd5d226790, type: 3}

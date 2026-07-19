@@ -35,8 +35,8 @@ namespace TowerDefense.Gameplay.Combat
             IsAttacking = true;
             _currentTarget = target;
             
-            // Phase 3 tương đương với vung vũ khí chém/bắn luôn (giống lính cận chiến)
-            _animator.SetInteger(AttackPhaseHash, 3); 
+            // Kích hoạt phase 1 để Animator chạy Base_Attack (giống lính cận chiến và Archer)
+            _animator.SetInteger(AttackPhaseHash, 1); 
         }
 
         // Gọi từ Animation Event đúng lúc quả cầu phép bay ra khỏi gậy (ví dụ: Hit)
