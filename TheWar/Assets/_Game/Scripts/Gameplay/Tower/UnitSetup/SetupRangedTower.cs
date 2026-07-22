@@ -4,7 +4,7 @@ namespace TowerDefense.Gameplay.Tower.UnitSetup
 {
     /// <summary>
     /// Kéo script này vào mô hình Lính Bắn Xa (Pháp Sư, Cung Thủ).
-    /// Nó sẽ tự động gắn tất cả các Script cần thiết như TowerUnit, TowerShooter, TowerDetector, TowerUnitAnimation.
+    /// Nó sẽ tự động gắn tất cả các Script cần thiết như TowerUnit, UnitController, TowerDetector, TowerUnitAnimation.
     /// </summary>
     [RequireComponent(typeof(TowerUnit))]
     [RequireComponent(typeof(TowerDetector))]

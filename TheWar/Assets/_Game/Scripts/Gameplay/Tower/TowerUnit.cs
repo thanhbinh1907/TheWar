@@ -37,7 +37,7 @@ namespace TowerDefense.Gameplay.Tower
                 _detector.Initialize(data.AttackRange);
             }
 
-            // Khởi tạo Combat (dùng UnitController thay vì TowerShooter)
+            // Khởi tạo Combat (dùng UnitController)
             var unitController = GetComponent<TowerDefense.Gameplay.Combat.UnitController>();
             if (unitController != null)
             {
